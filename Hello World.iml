@@ -26,3 +26,53 @@
       57 |     console.log("Popup deteted, attempting to close...");
       58 |     await this.page.locator('.ui-dialog-titlebar-close').click();
       59 |     await this.page.waitForSelector('.ui-dialog', { state: 'detached' });
+
+
+
+// Ensure the page is fully loaded before interacting with the popup
+await this.page.waitForLoadState('networkidle');
+await this.page.waitForTimeout(500); // Small delay for stability
+
+// Debug: Log if the page unexpectedly navigates
+this.page.on('framenavigated', (frame) => console.log(`⚠️ Page navigated to: ${frame.url()}`));
+
+try {
+  // Ensure the page is still available before interacting
+  if (!this.page.isClosed() && this.page.url()) {
+    
+    // Check if the popup exists before interacting
+    const popupExists = await this.page.locator('.ui-dialog').count();
+
+    if (popupExists > 0) {
+      console.log("✅ Popup detected, attempting to close...");
+
+      // Click the close button inside the popup
+      await this.page.locator('.ui-dialog-titlebar-close').click();
+
+      // Wait for the popup to be completely removed from the DOM
+      await this.page.waitForSelector('.ui-dialog', { state: 'detached' });
+
+      console.log("✅ Popup successfully removed!");
+    } else {
+      console.log("✅ Popup was already removed.");
+    }
+
+    // Final assertion to confirm the popup is gone
+    await expect(this.page.locator('.ui-dialog')).not.toBeAttached();
+  }
+} catch (error) {
+  console.error("⚠️ Execution context was destroyed, possibly due to navigation. Retrying...");
+
+  // Wait for page to stabilize before retrying
+  await this.page.waitForLoadState('domcontentloaded');
+
+  // Retry checking for the popup
+  if (await this.page.locator('.ui-dialog').count() > 0) {
+    console.log("✅ Retrying: Popup detected, attempting to close...");
+    await this.page.locator('.ui-dialog-titlebar-close').click();
+    await this.page.waitForSelector('.ui-dialog', { state: 'detached' });
+  }
+
+  // Ensure popup is not present after retry
+  await expect(this.page.locator('.ui-dialog')).not.toBeAttached();
+}
