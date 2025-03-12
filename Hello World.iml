@@ -1,1 +1,6 @@
-await expect(page.locator("//div[contains(@class, 'ui-dialog') and contains(@class, 'ui-widget') and @role='dialog' and contains(@style, 'display: block')]//span[@id='ui-dialog-title-cfMessageContainer' and text()='Inform Customer of Inspection']")).toBeVisible({ timeout: 10000 });
+//div[@role='dialog']//span[@id='ui-dialog-title-cfMessageContainer']
+
+
+//div[@role='dialog']//span[@id='ui-dialog-title-cfMessageContainer' and normalize-space()='Inform Customer of Inspection']
+
+
