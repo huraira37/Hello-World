@@ -1,78 +1,47 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<module type="JAVA_MODULE" version="4">
-  <component name="NewModuleRootManager" inherit-compiler-output="true">
-    <exclude-output />
-    <content url="file://$MODULE_DIR$">
-      <sourceFolder url="file://$MODULE_DIR$/src" isTestSource="false" />
-    </content>
-    <orderEntry type="inheritedJdk" />
-    <orderEntry type="sourceFolder" forTests="false" />
-  </component>
-</module>
+In this test I'm validating that popup should be present on the page. and this my code:
 
-
-<div class="ui-dialog ui-widget ui-widget-content ui-corner-all  ui-draggable" tabindex="-1" role="dialog" aria-labelledby="ui-dialog-title-cfMessageContainer" style="display: block; z-index: 1002; outline: 0px; height: auto; width: 750px; top: 157px; left: 253px;"><div class="ui-dialog-titlebar ui-widget-header ui-corner-all ui-helper-clearfix"><span class="ui-dialog-title" id="ui-dialog-title-cfMessageContainer">Inform Customer of Inspection</span><a href="#" class="ui-dialog-titlebar-close ui-corner-all" role="button"><span class="ui-icon ui-icon-closethick">close</span></a></div><div id="cfMessageContainer" class="ui-dialog-content ui-widget-content" style="width: auto; min-height: 0px; height: 295px;">
-	    	<span id="cfMessageContainerValue">Notify the customer that a <b><u>DIY (do-it-yourself)</u></b> inspection request will be sent to the email they provided in the application. The email will come from our inspection vendor, Hover, and will provide additional instructions on how to complete the DIY inspection, which will involve downloading an application onto their mobile electronic device and following the provided directions to take photographs of their home. Liberty requires that an inspection be completed within the timeframe provided in order for the policy to continue to stay in effect after it is issued.<br><br>If no email was provided, or if the customer declines the DIY inspection by not completing it, an exterior inspection will take place within a few weeks of the policy effective date. Additional details regarding the exterior inspection will be sent to the customer on a postcard that will explain the inspection process.<br><br><b><u>Background:</u></b> An inspection is a visual review of the property to confirm that it is in proper condition. Customer does not need to be present for the inspection (if an exterior inspection is being done) but will need to make sure the inspector has access to the property.</span>                  
-		</div><div class="ui-dialog-buttonpane ui-widget-content ui-helper-clearfix"><div class="ui-dialog-buttonset"><button type="button" class="ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only" role="button" aria-disabled="false" id="OKButton" name="OKButton"><span class="ui-button-text">OK</span></button></div></div></div>
-
- Error: locator.count: Execution context was destroyed, most likely because of a navigation
-
-       at ..\page-objects\cfpProperty-objects\billing-property-page.ts:56
-
-      54 |   await this.page.waitForTimeout(500);
-      55 |
-    > 56 |   if(await this.page.locator('.ui-dialog').count() > 0) {
-         |                                            ^
-      57 |     console.log("Popup deteted, attempting to close...");
-      58 |     await this.page.locator('.ui-dialog-titlebar-close').click();
-      59 |     await this.page.waitForSelector('.ui-dialog', { state: 'detached' });
-
-
-
-// Ensure the page is fully loaded before interacting with the popup
-await this.page.waitForLoadState('networkidle');
-await this.page.waitForTimeout(500); // Small delay for stability
-
-// Debug: Log if the page unexpectedly navigates
-this.page.on('framenavigated', (frame) => console.log(`⚠️ Page navigated to: ${frame.url()}`));
-
-try {
-  // Ensure the page is still available before interacting
-  if (!this.page.isClosed() && this.page.url()) {
-    
-    // Check if the popup exists before interacting
-    const popupExists = await this.page.locator('.ui-dialog').count();
-
-    if (popupExists > 0) {
-      console.log("✅ Popup detected, attempting to close...");
-
-      // Click the close button inside the popup
-      await this.page.locator('.ui-dialog-titlebar-close').click();
-
-      // Wait for the popup to be completely removed from the DOM
-      await this.page.waitForSelector('.ui-dialog', { state: 'detached' });
-
-      console.log("✅ Popup successfully removed!");
-    } else {
-      console.log("✅ Popup was already removed.");
-    }
-
-    // Final assertion to confirm the popup is gone
-    await expect(this.page.locator('.ui-dialog')).not.toBeAttached();
-  }
-} catch (error) {
-  console.error("⚠️ Execution context was destroyed, possibly due to navigation. Retrying...");
-
-  // Wait for page to stabilize before retrying
-  await this.page.waitForLoadState('domcontentloaded');
-
-  // Retry checking for the popup
-  if (await this.page.locator('.ui-dialog').count() > 0) {
-    console.log("✅ Retrying: Popup detected, attempting to close...");
-    await this.page.locator('.ui-dialog-titlebar-close').click();
-    await this.page.waitForSelector('.ui-dialog', { state: 'detached' });
+  public async inspectionPopupPresent() {
+    const page = this.page;
+    await new Promise(resolve => setTimeout(resolve, 5000));
+    this.logger.log("Inspection popUp title is " + " Inform Customer of Inspection");
+    await expect(this.inspectionPopUpHeadline).toHaveText("Inform Customer of Inspection");
+    this.logger.log("Inspection popup title is validated");
+    await expect(this.inspectionPopUp).toHaveCount(1);
+    await expect(this.inspectionPopMsg1).toContainText("Notify the customer that a DIY (do-it-yourself)");
+    this.logger.log("Inspection popup TextMsg is validated");
+    await new Promise(resolve => setTimeout(resolve, 5000));
+    await this.okBtn.click();
+    this.logger.log("Clicked on Ok button");
+    await expect(this.congratulationText).toHaveText("Congratulations on the sale!", { timeout: 20000 });
+    this.logger.log("Validated the Congratulation Text");
   }
 
-  // Ensure popup is not present after retry
-  await expect(this.page.locator('.ui-dialog')).not.toBeAttached();
-}
+* But I'm getting bellow error
+
+
+
+Error: Timed out 5000ms waiting for expect(locator).toHaveText(expected)
+
+    Locator: locator('//span[text()=\'Inform Customer of Inspection\']')
+    Expected string: "Inform Customer of Inspection"
+    Received string: ""
+    Call log:
+      - expect.toHaveText with timeout 5000ms
+      - waiting for locator('//span[text()=\'Inform Customer of Inspection\']')
+
+
+       at ..\page-objects\cfpProperty-objects\billing-property-page.ts:90
+
+      88 |     await new Promise(resolve => setTimeout(resolve, 5000));
+      89 |     this.logger.log("Inspection popUp title is " + " Inform Customer of Inspection");
+    > 90 |     await expect(this.inspectionPopUpHeadline).toHaveText("Inform Customer of Inspection");
+         |                                                ^
+      91 |     this.logger.log("Inspection popup title is validated");
+      92 |     await expect(this.inspectionPopUp).toHaveCount(1);
+      93 |     await expect(this.inspectionPopMsg1).toContainText("Notify the customer that a DIY (do-it-yourself)");
+
+        at billingPropertyPage.inspectionPopupPresent (c:\Users\n1581999\PlaywrightCompleteProject\hammertime-auto-playwright-tests\Playwright-Automation\page-objects\cfpProperty-objects\billing-property-page.ts:90:48)
+        at c:\Users\n1581999\PlaywrightCompleteProject\hammertime-auto-playwright-tests\Playwright-Automation\tests\cf_PropertyTest\inspectionScoreCard\02 INSP(UNDR CONST NO)-INSP-pop-up-at-Bind.spec.ts:65:3
+
+
+* Please solve this issue with my existing code.
