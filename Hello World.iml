@@ -1,47 +1,23 @@
-In this test I'm validating that popup should be present on the page. and this my code:
-
-  public async inspectionPopupPresent() {
-    const page = this.page;
-    await new Promise(resolve => setTimeout(resolve, 5000));
-    this.logger.log("Inspection popUp title is " + " Inform Customer of Inspection");
-    await expect(this.inspectionPopUpHeadline).toHaveText("Inform Customer of Inspection");
-    this.logger.log("Inspection popup title is validated");
-    await expect(this.inspectionPopUp).toHaveCount(1);
-    await expect(this.inspectionPopMsg1).toContainText("Notify the customer that a DIY (do-it-yourself)");
-    this.logger.log("Inspection popup TextMsg is validated");
-    await new Promise(resolve => setTimeout(resolve, 5000));
-    await this.okBtn.click();
-    this.logger.log("Clicked on Ok button");
-    await expect(this.congratulationText).toHaveText("Congratulations on the sale!", { timeout: 20000 });
-    this.logger.log("Validated the Congratulation Text");
-  }
-
-* But I'm getting bellow error
+Based on your sugesstion I updated my code but getting below error:
 
 
-
-Error: Timed out 5000ms waiting for expect(locator).toHaveText(expected)
+Error: Timed out 10000ms waiting for expect(locator).toBeVisible()
 
     Locator: locator('//span[text()=\'Inform Customer of Inspection\']')
-    Expected string: "Inform Customer of Inspection"
-    Received string: ""
+    Expected: visible
+    Received: hidden
     Call log:
-      - expect.toHaveText with timeout 5000ms
+      - expect.toBeVisible with timeout 10000ms
       - waiting for locator('//span[text()=\'Inform Customer of Inspection\']')
 
 
-       at ..\page-objects\cfpProperty-objects\billing-property-page.ts:90
+       at ..\page-objects\cfpProperty-objects\billing-property-page.ts:89
 
-      88 |     await new Promise(resolve => setTimeout(resolve, 5000));
-      89 |     this.logger.log("Inspection popUp title is " + " Inform Customer of Inspection");
-    > 90 |     await expect(this.inspectionPopUpHeadline).toHaveText("Inform Customer of Inspection");
-         |                                                ^
-      91 |     this.logger.log("Inspection popup title is validated");
-      92 |     await expect(this.inspectionPopUp).toHaveCount(1);
-      93 |     await expect(this.inspectionPopMsg1).toContainText("Notify the customer that a DIY (do-it-yourself)");
+      87 |     
+      88 |     this.logger.log("Waiting for Inspection popup to appear...");
+    > 89 |     await expect(this.inspectionPopUp).toBeVisible({ timeout:10000});
+         |                                        ^
+      90 |     this.logger.log("Inspection popUp title is " + " Inform Customer of Inspection");
+      91 |
+      92 |     await expect(this.inspectionPopUpHeadline).toBeVisible({timeout:10000});
 
-        at billingPropertyPage.inspectionPopupPresent (c:\Users\n1581999\PlaywrightCompleteProject\hammertime-auto-playwright-tests\Playwright-Automation\page-objects\cfpProperty-objects\billing-property-page.ts:90:48)
-        at c:\Users\n1581999\PlaywrightCompleteProject\hammertime-auto-playwright-tests\Playwright-Automation\tests\cf_PropertyTest\inspectionScoreCard\02 INSP(UNDR CONST NO)-INSP-pop-up-at-Bind.spec.ts:65:3
-
-
-* Please solve this issue with my existing code.
