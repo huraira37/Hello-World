@@ -1,50 +1,63 @@
-I'm sharing a code where purchase date field I put in the try catch because that purchase date filed sometimes is appier in the application or sometimes not but because of that try catch code sometimes test making flaky or error, can you update my code with better soliution: 
+public async vehiclesScreen(
+  vinNumber: string,
+  usageType: string,
+  ownedMoreThanThirtyDays: string,
+  workSchoolMilesPerWeek: string,
+  additionalMilesPerYear: string,
+  antiTheftDevice: string,
+  purchaseDateSelect: string,
+  ownerShipType: string,
+  sameAsResidential: string
+) {
+  const page = this.page;
+  
+  this.logger.log("VIN number is " + vinNumber);
+  await this.vinNumber1_cf2.fill(vinNumber);
+  this.logger.log("Entered the VIN number");
 
-  public async vehiclesScreen(vinNumber: string, usageType: string, ownedMoreThanThirtyDays: string, workSchoolMilesPerWeek: string, additionalMilesPerYear: string, antiTheftDevice: string, purchaseDateSelect: string, ownerShipType: string, sameAsResidential: string) {
-    const page = this.page;
-    await new Promise(resolve => setTimeout(resolve, 5000));
-    this.logger.log("VIN number is " + vinNumber);
-    await this.vinNumber1_cf2.fill(vinNumber);
-    this.logger.log("Entered the VIN number");
-    await new Promise(resolve => setTimeout(resolve, 5000));
-    this.logger.log("Usage Type is " + usageType);
-    await this.usageType.selectOption(usageType);
-    await this.mileageInformation.click();
-    this.logger.log("Clicked on mileage Information link");
-    this.logger.log("Owned more than thirty days is " + ownedMoreThanThirtyDays);
-    try {
-      await this.ownedMoreThanThirtyDays.selectOption(ownedMoreThanThirtyDays, { timeout: 5_000 });
-    } catch (Exception) {
-    }
+  this.logger.log("Usage Type is " + usageType);
+  await this.usageType.selectOption(usageType);
+  
+  await this.mileageInformation.click();
+  this.logger.log("Clicked on mileage Information link");
 
-    this.logger.log("Work school miles per week is " + workSchoolMilesPerWeek);
-    await this.workSchoolMilesPerWeek.fill(workSchoolMilesPerWeek);
-    this.logger.log("Additional Miles per year is " + additionalMilesPerYear);
-    await this.additionalMilesPerYear.fill(additionalMilesPerYear);
-    await new Promise(resolve => setTimeout(resolve, 5000));
-    if (await this.okButtonOne.isVisible()) {
-      this.okButtonOne.click()
-      console.log("Clicked on OK button");
-    } else if (await this.okButtonTwo.isVisible()) {
-      this.okButtonTwo.click()
-      console.log("Clicked on ok button");
-    } else
-      console.log("Condition does not match");
-    this.logger.log("Anti theft device is " + antiTheftDevice);
-    await this.antitheftDevice.selectOption(antiTheftDevice);
-    await new Promise(resolve => setTimeout(resolve, 5000));
-
-    try {
-      this.logger.log("Purchase date is "+purchaseDateSelect);
-      await this.purchseDateFirstVehicle.selectOption(purchaseDateSelect, { timeout: 15_000 });
-      console.log("Purchase date is selected");
-    } catch (Exception) {
-    }
-
-    this.logger.log("ownerShip type is " + ownerShipType);
-    await this.ownerShipType.selectOption(ownerShipType);
-    this.logger.log("Residential is " + sameAsResidential);
-    await this.sameAsResidential.selectOption(sameAsResidential);
+  this.logger.log("Owned more than thirty days is " + ownedMoreThanThirtyDays);
+  if (await this.ownedMoreThanThirtyDays.isVisible()) {
+    await this.ownedMoreThanThirtyDays.selectOption(ownedMoreThanThirtyDays);
   }
 
+  this.logger.log("Work school miles per week is " + workSchoolMilesPerWeek);
+  await this.workSchoolMilesPerWeek.fill(workSchoolMilesPerWeek);
 
+  this.logger.log("Additional Miles per year is " + additionalMilesPerYear);
+  await this.additionalMilesPerYear.fill(additionalMilesPerYear);
+
+  // Handle OK buttons more efficiently
+  if (await this.okButtonOne.isVisible()) {
+    await this.okButtonOne.click();
+    console.log("Clicked on OK button");
+  } else if (await this.okButtonTwo.isVisible()) {
+    await this.okButtonTwo.click();
+    console.log("Clicked on OK button");
+  } else {
+    console.log("No OK button found");
+  }
+
+  this.logger.log("Anti-theft device is " + antiTheftDevice);
+  await this.antitheftDevice.selectOption(antiTheftDevice);
+
+  // Handle purchase date field if visible
+  if (await this.purchseDateFirstVehicle.isVisible()) {
+    this.logger.log("Purchase date is " + purchaseDateSelect);
+    await this.purchseDateFirstVehicle.selectOption(purchaseDateSelect);
+    console.log("Purchase date selected");
+  } else {
+    this.logger.log("Purchase date field not found, skipping...");
+  }
+
+  this.logger.log("Ownership type is " + ownerShipType);
+  await this.ownerShipType.selectOption(ownerShipType);
+
+  this.logger.log("Residential status is " + sameAsResidential);
+  await this.sameAsResidential.selectOption(sameAsResidential);
+}
