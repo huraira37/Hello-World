@@ -1,33 +1,32 @@
-about this code: when navigates to premium page additional info popup display and sometimes not that's why I put this code witin try catch if popup not display I put that code in the catch exception. but most of the time test are slow or failed here. so can you more standard my code and update it?
-
 public async additionalInfoValidation(additionalRunwayAlphaInfo: string, rideSharingSelect: string, rateStatus: string) {
-    const page = this.page;
-    const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
     try {
-      await expect(this.additionalPopUp).toHaveCount(1);
-      await new Promise(resolve => setTimeout(resolve, 5000));
-      await expect(this.additionalPopUp).toContainText("Additional Information Review Validation", { timeout: 30000 });
-      await this.additionalRunwayAlphaInfo.selectOption(additionalRunwayAlphaInfo, { timeout: 5_000 });
-      this.logger.log("Additional Runway Alpha Info is " + additionalRunwayAlphaInfo);
-      await sleep(5000);
-      await this.submitDecision.click();
-      this.logger.log("Click on submit button");
-      page.waitForLoadState('domcontentloaded');
-      await this.reRateButton.click();
-      await sleep(5000);
-      await expect(this.rateStatusValid).toContainText(rateStatus, { timeout: 20000 });
-      this.logger.log("Validated the Rate status");
-      await sleep(5000);
-      await this.headerNext.click();
-      this.logger.log("Clicked the next")
-    }
-    catch (Exception) {
-      await this.reRateButton.click();
-      await new Promise(resolve => setTimeout(resolve, 5000));
-      await expect(this.rateStatusValid).toContainText(rateStatus, { timeout: 20000 });
-      this.logger.log("Rate status is validated");
-      await this.headerNext.click();
-      console.log("Continue");
+        await expect(this.additionalPopUp).toBeVisible({ timeout: 5000 });
 
+        await expect(this.additionalPopUp).toContainText("Additional Information Review Validation", { timeout: 30000 });
+
+        await this.additionalRunwayAlphaInfo.selectOption(additionalRunwayAlphaInfo);
+        this.logger.log(`Additional Runway Alpha Info selected: ${additionalRunwayAlphaInfo}`);
+
+        await this.submitDecision.click();
+        this.logger.log("Clicked on submit button");
+
+        await this.page.waitForLoadState('domcontentloaded');
+
+        await this.reRateButton.click();
+        await expect(this.rateStatusValid).toContainText(rateStatus, { timeout: 20000 });
+        this.logger.log("Validated the Rate status");
+
+        await this.headerNext.click();
+        this.logger.log("Clicked Next");
+
+    } catch (error) {
+        this.logger.log("Popup did not appear, proceeding without it.");
+
+        await this.reRateButton.click();
+        await expect(this.rateStatusValid).toContainText(rateStatus, { timeout: 20000 });
+        this.logger.log("Validated Rate status without popup");
+
+        await this.headerNext.click();
+        this.logger.log("Clicked Next");
     }
-  }
+}
