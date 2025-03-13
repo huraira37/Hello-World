@@ -1,24 +1,16 @@
-This is my code:
+import { expect } from "@playwright/test";
 
-  public async validateOperatorOptions_cf1(operatorTypeValidation: string) {
+public async validateOperatorOptions_cf1(operatorTypeValidation: string) {
     const page = this.page;
-    const dropdown_Disabled = await this.restrictedOperator_cf1.locator("//option[text()='" + operatorTypeValidation + "']").isDisabled();
-    await new Promise(resolve => setTimeout(resolve, 20000));
-    expect(dropdown_Disabled).toBe(true);
+    const locator = this.restrictedOperator_cf1.locator(`//option[text()='${operatorTypeValidation}']`);
+    
+    // Ensure the element is present before checking its state
+    await locator.waitFor({ state: "attached", timeout: 5000 });
 
-  }
+    // Debugging log
+    const isDisabled = await locator.isDisabled();
+    console.log(`Dropdown option '${operatorTypeValidation}' disabled state:`, isDisabled);
 
-
-* I got this error:
-
-Error: expect(received).toBe(expected) // Object.is equality
-
-Expected: true
-Received: false
-
-  61 |     const dropdown_Disabled = await this.restrictedOperator_cf1.locator("//option[text()='" + operatorTypeValidation + "']").isDisabled();
-  62 |     await new Promise(resolve => setTimeout(resolve, 20000));
-> 63 |     expect(dropdown_Disabled).toBe(true);
-     |                               ^
-
-Can you update my code with better assertion?
+    // Use better assertion
+    expect(isDisabled).toBeTruthy();
+}
