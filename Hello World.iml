@@ -1,63 +1,33 @@
-public async vehiclesScreen(
-  vinNumber: string,
-  usageType: string,
-  ownedMoreThanThirtyDays: string,
-  workSchoolMilesPerWeek: string,
-  additionalMilesPerYear: string,
-  antiTheftDevice: string,
-  purchaseDateSelect: string,
-  ownerShipType: string,
-  sameAsResidential: string
-) {
-  const page = this.page;
-  
-  this.logger.log("VIN number is " + vinNumber);
-  await this.vinNumber1_cf2.fill(vinNumber);
-  this.logger.log("Entered the VIN number");
+about this code: when navigates to premium page additional info popup display and sometimes not that's why I put this code witin try catch if popup not display I put that code in the catch exception. but most of the time test are slow or failed here. so can you more standard my code and update it?
 
-  this.logger.log("Usage Type is " + usageType);
-  await this.usageType.selectOption(usageType);
-  
-  await this.mileageInformation.click();
-  this.logger.log("Clicked on mileage Information link");
+public async additionalInfoValidation(additionalRunwayAlphaInfo: string, rideSharingSelect: string, rateStatus: string) {
+    const page = this.page;
+    const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+    try {
+      await expect(this.additionalPopUp).toHaveCount(1);
+      await new Promise(resolve => setTimeout(resolve, 5000));
+      await expect(this.additionalPopUp).toContainText("Additional Information Review Validation", { timeout: 30000 });
+      await this.additionalRunwayAlphaInfo.selectOption(additionalRunwayAlphaInfo, { timeout: 5_000 });
+      this.logger.log("Additional Runway Alpha Info is " + additionalRunwayAlphaInfo);
+      await sleep(5000);
+      await this.submitDecision.click();
+      this.logger.log("Click on submit button");
+      page.waitForLoadState('domcontentloaded');
+      await this.reRateButton.click();
+      await sleep(5000);
+      await expect(this.rateStatusValid).toContainText(rateStatus, { timeout: 20000 });
+      this.logger.log("Validated the Rate status");
+      await sleep(5000);
+      await this.headerNext.click();
+      this.logger.log("Clicked the next")
+    }
+    catch (Exception) {
+      await this.reRateButton.click();
+      await new Promise(resolve => setTimeout(resolve, 5000));
+      await expect(this.rateStatusValid).toContainText(rateStatus, { timeout: 20000 });
+      this.logger.log("Rate status is validated");
+      await this.headerNext.click();
+      console.log("Continue");
 
-  this.logger.log("Owned more than thirty days is " + ownedMoreThanThirtyDays);
-  if (await this.ownedMoreThanThirtyDays.isVisible()) {
-    await this.ownedMoreThanThirtyDays.selectOption(ownedMoreThanThirtyDays);
+    }
   }
-
-  this.logger.log("Work school miles per week is " + workSchoolMilesPerWeek);
-  await this.workSchoolMilesPerWeek.fill(workSchoolMilesPerWeek);
-
-  this.logger.log("Additional Miles per year is " + additionalMilesPerYear);
-  await this.additionalMilesPerYear.fill(additionalMilesPerYear);
-
-  // Handle OK buttons more efficiently
-  if (await this.okButtonOne.isVisible()) {
-    await this.okButtonOne.click();
-    console.log("Clicked on OK button");
-  } else if (await this.okButtonTwo.isVisible()) {
-    await this.okButtonTwo.click();
-    console.log("Clicked on OK button");
-  } else {
-    console.log("No OK button found");
-  }
-
-  this.logger.log("Anti-theft device is " + antiTheftDevice);
-  await this.antitheftDevice.selectOption(antiTheftDevice);
-
-  // Handle purchase date field if visible
-  if (await this.purchseDateFirstVehicle.isVisible()) {
-    this.logger.log("Purchase date is " + purchaseDateSelect);
-    await this.purchseDateFirstVehicle.selectOption(purchaseDateSelect);
-    console.log("Purchase date selected");
-  } else {
-    this.logger.log("Purchase date field not found, skipping...");
-  }
-
-  this.logger.log("Ownership type is " + ownerShipType);
-  await this.ownerShipType.selectOption(ownerShipType);
-
-  this.logger.log("Residential status is " + sameAsResidential);
-  await this.sameAsResidential.selectOption(sameAsResidential);
-}
