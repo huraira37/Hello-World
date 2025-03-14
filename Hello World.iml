@@ -1,12 +1,1 @@
-public async validatedUnderwritingPausePopup() {
-    const page = this.page;
-    await page.waitForLoadState('domcontentloaded');
 
-    // Wait for the pop-up text to be visible
-    const underwritingPauseLocator = page.locator("//span[text()='Underwriting Pause']");
-    await underwritingPauseLocator.waitFor({ state: 'visible', timeout: 30000 });
-
-    await expect(underwritingPauseLocator).toHaveText("Underwriting Pause", { timeout: 30000 });
-
-    this.logger.log("Validated the Under Writing Pause Pop-up");
-}
