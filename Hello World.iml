@@ -1,4 +1,33 @@
-Thanks for laying it out that way Huraira. I'm ireally nterested in having some sort of dashboard / more insight into your testing framework. Code coverage #'s could be a part of that, but I'm curious from your standpoint what you think would be helpful for me to see  
- 
-I don't want to send you down a POC path if you don't think it will be helpful / useful 
+this is my code:
+
+  public async validatedUnderwritingPausePopup() {
+    const page = this.page;
+    page.waitForLoadState('domcontentloaded');
+    await new Promise(resolve => setTimeout(resolve, 5000));
+    await expect(this.underwritingPause).toHaveText("Underwriting Pause", { timeout: 30000 })
+    this.logger.log("Validated the Under Writing Pause Pop-up");
+  }
+
+
+* but receiving below error:
+
+
+
+
+
+Error: Timed out 30000ms waiting for expect(locator).toHaveText(expected)
+
+Locator: locator('//span[text()=\'Underwriting Pause\']')
+Expected string: "Underwriting Pause"
+Received: <element(s) not found>
+Call log:
+  - expect.toHaveText with timeout 30000ms
+  - waiting for locator('//span[text()=\'Underwriting Pause\']')
+
+
+  120 |     page.waitForLoadState('domcontentloaded');
+  121 |     await new Promise(resolve => setTimeout(resolve, 5000));
+> 122 |     await expect(this.underwritingPause).toHaveText("Underwriting Pause", { timeout: 30000 })
+
+give me best solituion:
  
