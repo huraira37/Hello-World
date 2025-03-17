@@ -1,11 +1,76 @@
-PS C:\Users\n1581999\playwright-automation> touch playwright.config.ts monocart.config.ts package.json README.md  
-touch : The term 'touch' is not recognized as the name of a cmdlet, function, script file, or operable 
-program. Check the spelling of the name, or if a path was included, verify that the path is correct and     
-try again.
-At line:1 char:1
-+ touch playwright.config.ts monocart.config.ts package.json README.md
-+ ~~~~~
-    + CategoryInfo          : ObjectNotFound: (touch:String) [], CommandNotFoundException
-    + FullyQualifiedErrorId : CommandNotFoundException
+// Install dependencies before running the tests:
+// npm init -y
+// npm install playwright @playwright/test monocart-reporter
+
+// package.json
+{
+  "scripts": {
+    "test": "npx playwright test",
+    "report": "npx playwright show-report"
+  },
+  "devDependencies": {
+    "@playwright/test": "latest",
+    "monocart-reporter": "latest"
+  }
+}
+
+// playwright.config.ts
+import { defineConfig } from '@playwright/test';
+
+export default defineConfig({
+  testDir: './tests',
+  reporter: [['monocart-reporter', { outputFile: 'monocart-report.html' }]],
+  use: {
+    headless: true,
+    screenshot: 'only-on-failure',
+    video: 'retain-on-failure'
+  },
+  coverage: { enabled: true }
+});
+
+// pages/BasePage.ts
+import { Page } from '@playwright/test';
+
+export class BasePage {
+  protected page: Page;
+  constructor(page: Page) {
+    this.page = page;
+  }
+}
+
+// pages/HomePage.ts
+import { BasePage } from './BasePage';
+import { expect } from '@playwright/test';
+
+export class HomePage extends BasePage {
+  async navigate() {
+    await this.page.goto('https://example.com');
+  }
+  async verifyTitle() {
+    await expect(this.page).toHaveTitle(/Example/);
+  }
+}
+
+// tests/home.spec.ts
+import { test, expect } from '@playwright/test';
+import { HomePage } from '../pages/HomePage';
+
+test('Verify home page title', async ({ page }) => {
+  const homePage = new HomePage(page);
+  await homePage.navigate();
+  await homePage.verifyTitle();
+});
+
+// tests/sample.spec.ts
+import { test } from '@playwright/test';
+
+test('Dummy test case 1', async ({ page }) => {
+  await page.goto('https://example.com');
+});
+
+test('Dummy test case 2', async ({ page }) => {
+  await page.goto('https://example.com');
+});
+
 
 
