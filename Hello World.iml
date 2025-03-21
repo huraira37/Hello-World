@@ -1,44 +1,33 @@
-This is my code:
+public async searchCustomerCA(
+  lastNameSelect: string,
+  firstNameSelect: string,
+  stateProvinceSelect: string,
+  phoneNumber: string
+) {
+  const page = this.page;
 
-  public async searchCustomerCA(lastNameSelect:string,firstNameSelect:string,stateProvinceSelect:string,phoneNumber: string) {
-    const page = this.page;
-    this.logger.log("Last name is "+lastNameSelect);
-    await this.lastName.fill(lastNameSelect);
-    this.logger.log("First name is "+firstNameSelect);
-    await this.fristName.fill(firstNameSelect);
-    this.logger.log("State is "+stateProvinceSelect);
-    await this.stateProvince.selectOption(stateProvinceSelect);
-    this.logger.log("Phone number is "+phoneNumber);
-    await this.phoneNumber.fill(phoneNumber);
-    this.logger.log("Entered the phone number");
-    await this.runSearchBtn.click();
-    this.logger.log("Clicked on search button");
-    await expect(page).toHaveTitle("Customer Service Workbench");
-    await expect(this.homePageHeading).toContainText("Customer Service Workbench");
-    this.logger.log("Customer Service page is appeared");
-  }
+  this.logger.log("Last name is " + lastNameSelect);
+  await this.lastName.fill(lastNameSelect);
 
+  this.logger.log("First name is " + firstNameSelect);
+  await this.fristName.fill(firstNameSelect);
 
-* but getting this error:
+  this.logger.log("State is " + stateProvinceSelect);
+  await this.stateProvince.selectOption(stateProvinceSelect);
 
-Error: Timed out 5000ms waiting for expect(locator).toContainText(expected)
+  this.logger.log("Phone number is " + phoneNumber);
+  await this.phoneNumber.fill(phoneNumber);
+  this.logger.log("Entered the phone number");
 
-    Locator: locator('p[class=\'siteId\']')
-    Expected string: "Customer Service Workbench"
-    Received: <element(s) not found>
-    Call log:
-      - expect.toContainText with timeout 5000ms
-      - waiting for locator('p[class=\'siteId\']')
+  await this.runSearchBtn.click();
+  this.logger.log("Clicked on search button");
 
+  // Wait for title to ensure page is loaded
+  await expect(page).toHaveTitle("Customer Service Workbench", { timeout: 10000 });
 
-       at ..\page-objects\cfAuto-objects\searchCustomer-page.ts:27
+  // Wait for the element to appear before asserting
+  await expect(this.homePageHeading).toBeVisible({ timeout: 10000 });
+  await expect(this.homePageHeading).toContainText("Customer Service Workbench");
 
-      25 |     this.logger.log("Clicked on search button");
-      26 |     await expect(page).toHaveTitle("Customer Service Workbench");
-    > 27 |     await expect(this.homePageHeading).toContainText("Customer Service Workbench");
-         |                                        ^
-      28 |     this.logger.log("Customer Service page is appeared");
-      29 |   }
-      30 |   public async searchCustomer(phoneNumber: string) {
-
-Can you solve this issue and update the code?
+  this.logger.log("Customer Service page is appeared");
+}
