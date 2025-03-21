@@ -1,42 +1,18 @@
-This is my code:
-  public async validateRejectionReason(rejectionReasonText: string) {
-    const page = this.page;
-    
-    await this.ratingInfo.click();
-    page.waitForLoadState('domcontentloaded');
-    // page.waitForLoadState('domcontentloaded');
-    await new Promise(resolve => setTimeout(resolve, 20000));
-    await expect(this.rejectionReason).toHaveText(rejectionReasonText);
-    this.logger.log("Rejection Reason is " + rejectionReasonText);
-    await new Promise(resolve => setTimeout(resolve, 7000));
-    await this.doneButton.click();
-  }
+public async validateRejectionReason(rejectionReasonText: string) {
+  const page = this.page;
 
+  // Click to open rating info
+  await this.ratingInfo.click();
 
+  // Wait until the rejection reason element appears and is visible
+  await expect(this.rejectionReason).toBeVisible({ timeout: 10000 });
 
+  // Validate the expected text
+  await expect(this.rejectionReason).toHaveText(rejectionReasonText, { timeout: 10000 });
 
+  this.logger.log("Rejection Reason is " + rejectionReasonText);
 
-* but getting below error
+  // Click the done button
+  await this.doneButton.click();
+}
 
-Error: Timed out 5000ms waiting for expect(locator).toHaveText(expected)
-
-    Locator: locator('//span[@name=\'property(reasons)\']')
-    Expected string: "Unbindable Vehicle"
-    Received: <element(s) not found>
-    Call log:
-      - expect.toHaveText with timeout 5000ms
-      - waiting for locator('//span[@name=\'property(reasons)\']')
-
-
-       at ..\page-objects\cfAuto-objects\premium-page.ts:63
-
-      61 |     // page.waitForLoadState('domcontentloaded');
-      62 |     await new Promise(resolve => setTimeout(resolve, 20000));
-    > 63 |     await expect(this.rejectionReason).toHaveText(rejectionReasonText);
-         |                                        ^
-      64 |     this.logger.log("Rejection Reason is " + rejectionReasonText);
-      65 |     await new Promise(resolve => setTimeout(resolve, 7000));
-      66 |     await this.doneButton.click();
-
-
-Give me best solition and update the code
