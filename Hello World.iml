@@ -1,32 +1,16 @@
-This is my code:
+public async searchCustomer(phoneNumber: string) {
+  const page = this.page;
+  this.logger.log("Phone number is " + phoneNumber);
 
-  public async searchCustomer(phoneNumber: string) {
-    const page = this.page;
-    this.logger.log("Phone number is "+phoneNumber);
-    await this.phoneNumber.fill(phoneNumber);
-    this.logger.log("Entered the phone number");
-    await this.runSearchBtn.click();
-    this.logger.log("Clicked on search button");
-    await new Promise(resolve => setTimeout(resolve, 10000));
-    await expect(page).toHaveTitle("Customer Service Workbench");
-    await new Promise(resolve => setTimeout(resolve, 5000));
-   await expect(this.homePageHeading).toContainText("Customer Service Workbench");
-    this.logger.log("Customer Service page is appeared");
-  }
+  await this.phoneNumber.fill(phoneNumber);
+  this.logger.log("Entered the phone number");
 
+  await this.runSearchBtn.click();
+  this.logger.log("Clicked on search button");
 
+  // Use Playwright waitFor functions instead of hardcoded timeouts
+  await expect(page).toHaveTitle("Customer Service Workbench", { timeout: 15000 });
+  await expect(this.homePageHeading).toContainText("Customer Service Workbench", { timeout: 10000 });
 
-* but getting below error:
-
- TimeoutError: browserContext.waitForEvent: Timeout 90000ms exceeded while waiting for event "page"
-
-      16 |   logger.log("Select the Yes under 'Change policy' column");
-      17 |   const [cfAuto] = await Promise.all([
-    > 18 |     page.context().waitForEvent('page'),
-         |                    ^
-      19 |     await csw_page.cfauto.changePolicy()
-      20 |   ]);
-      21 |   page.close();
-
-Please solve this issue and update my code
-
+  this.logger.log("Customer Service page is appeared");
+}
