@@ -1,16 +1,55 @@
-// add-coverage-timestamp.js
+// inject-et-timestamp.js
 
 const fs = require('fs');
 const path = require('path');
 
-// Use Eastern Time
-const easternTime = new Date().toLocaleString("en-US", {
-  timeZone: "America/New_York",
-  hour12: false
-});
+const reportPath = path.join(__dirname, 'coverage', 'index.html');
 
-const reportDir = path.join(__dirname, 'coverage');
-const timestampPath = path.join(reportDir, 'timestamp.txt');
+// Wait until file exists
+function waitForFile(filePath, timeout = 5000) {
+  return new Promise((resolve, reject) => {
+    const interval = 100;
+    let waited = 0;
+    const check = () => {
+      if (fs.existsSync(filePath)) {
+        resolve();
+      } else if (waited >= timeout) {
+        reject(new Error('Timeout waiting for coverage report to be generated.'));
+      } else {
+        waited += interval;
+        setTimeout(check, interval);
+      }
+    };
+    check();
+  });
+}
 
-fs.writeFileSync(timestampPath, `Coverage Report Generated (ET): ${easternTime}`);
-console.log(`Timestamp written to ${timestampPath}`);
+(async () => {
+  try {
+    await waitForFile(reportPath);
+
+    const easternTime = new Date().toLocaleString("en-US", {
+      timeZone: "America/New_York",
+      hour12: false
+    });
+
+    let html = fs.readFileSync(reportPath, 'utf-8');
+
+    // Inject ET timestamp before closing </body>
+    const timestampHTML = `<div style="font-size:14px;margin-top:20px;text-align:center;">
+      <strong>Coverage Report Generated (ET):</strong> ${easternTime}
+    </div>`;
+
+    html = html.replace('</body>', `${timestampHTML}</body>`);
+
+    fs.writeFileSync(reportPath, html, 'utf-8');
+
+    console.log('Eastern Time timestamp injected into coverage report.');
+  } catch (err) {
+    console.error('Failed to inject timestamp:', err);
+  }
+})();
+
+
+"coverage": "nyc playwright test --headed && node inject-et-timestamp.js"
+
