@@ -1,6 +1,4 @@
-This is my code:
-
-public async searchCustomerCA(lastNameSelect: string, firstNameSelect: string, stateProvinceSelect: string, phoneNumber: string) {
+  public async searchCustomerCA(lastNameSelect: string, firstNameSelect: string, stateProvinceSelect: string, phoneNumber: string) {
     const page = this.page;
   
     this.logger.log("Last name is " + lastNameSelect);
@@ -16,39 +14,16 @@ public async searchCustomerCA(lastNameSelect: string, firstNameSelect: string, s
     await this.phoneNumber.fill(phoneNumber);
     this.logger.log("Entered the phone number");
   
-    await this.runSearchBtn.click();
+    await Promise.all([
+      page.waitForNavigation({ waitUntil: 'domcontentloaded' }),
+      await this.runSearchBtn.click()
+    ]);
+    // await this.runSearchBtn.click();
     this.logger.log("Clicked on search button");
-    await new Promise(resolve => setTimeout(resolve, 5000));
+    // await new Promise(resolve => setTimeout(resolve, 5000));
     await expect(page).toHaveTitle("Customer Service Workbench", { timeout: 10000 });
   
     await expect(this.homePageHeading).toBeVisible({ timeout: 10000 });
     await expect(this.homePageHeading).toContainText("Customer Service Workbench");
   
     this.logger.log("Customer Service page is appeared");
-  }
-
-
-* but8 getting below error:
-
-Error: Timed out 10000ms waiting for expect(locator).toHaveTitle(expected)
-
-    Locator: locator(':root')
-    Expected string: "Customer Service Workbench"
-    Received string: ""
-    Call log:
-      - expect.toHaveTitle with timeout 10000ms
-      - waiting for locator(':root')
-
-
-       at ..\page-objects\cfAuto-objects\searchCustomer-page.ts:31
-
-      29 |     this.logger.log("Clicked on search button");
-      30 |     await new Promise(resolve => setTimeout(resolve, 5000));
-    > 31 |     await expect(page).toHaveTitle("Customer Service Workbench", { timeout: 10000 });
-         |                        ^
-      32 |   
-      33 |     await expect(this.homePageHeading).toBeVisible({ timeout: 10000 });
-      34 |     await expect(this.homePageHeading).toContainText("Customer Service Workbench");
-
-
-Please solve the issue and update the code.
