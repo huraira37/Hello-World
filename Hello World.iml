@@ -1,54 +1,11 @@
-// inject-et-timestamp.js
+line 3, it's showing this error:
 
-const fs = require('fs');
-const path = require('path');
+File is a CommonJS module; it may be converted to an ES module.ts(80001)
+var require: NodeJS.Require
+(id: string) => any
+Used to import modules, JSON, and local files.
 
-const reportPath = path.join(__dirname, 'coverage', 'index.html');
-
-// Wait until file exists
-function waitForFile(filePath, timeout = 5000) {
-  return new Promise((resolve, reject) => {
-    const interval = 100;
-    let waited = 0;
-    const check = () => {
-      if (fs.existsSync(filePath)) {
-        resolve();
-      } else if (waited >= timeout) {
-        reject(new Error('Timeout waiting for coverage report to be generated.'));
-      } else {
-        waited += interval;
-        setTimeout(check, interval);
-      }
-    };
-    check();
-  });
-}
-
-(async () => {
-  try {
-    await waitForFile(reportPath);
-
-    const easternTime = new Date().toLocaleString("en-US", {
-      timeZone: "America/New_York",
-      hour12: false
-    });
-
-    let html = fs.readFileSync(reportPath, 'utf-8');
-
-    // Inject ET timestamp before closing </body>
-    const timestampHTML = `<div style="font-size:14px;margin-top:20px;text-align:center;">
-      <strong>Coverage Report Generated (ET):</strong> ${easternTime}
-    </div>`;
-
-    html = html.replace('</body>', `${timestampHTML}</body>`);
-
-    fs.writeFileSync(reportPath, html, 'utf-8');
-
-    console.log('Eastern Time timestamp injected into coverage report.');
-  } catch (err) {
-    console.error('Failed to inject timestamp:', err);
-  }
-})();
+@since — v0.1.13
 
 
 "coverage": "nyc playwright test --headed && node inject-et-timestamp.js"
