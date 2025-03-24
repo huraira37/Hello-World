@@ -1,68 +1,54 @@
-I implemented code Coverage in playwright automation framework. Can you explain below all files and with console report?
+This is my code:
+
+public async searchCustomerCA(lastNameSelect: string, firstNameSelect: string, stateProvinceSelect: string, phoneNumber: string) {
+    const page = this.page;
+  
+    this.logger.log("Last name is " + lastNameSelect);
+    await this.lastName.fill(lastNameSelect);
+  
+    this.logger.log("First name is " + firstNameSelect);
+    await this.fristName.fill(firstNameSelect);
+  
+    this.logger.log("State is " + stateProvinceSelect);
+    await this.stateProvince.selectOption(stateProvinceSelect);
+  
+    this.logger.log("Phone number is " + phoneNumber);
+    await this.phoneNumber.fill(phoneNumber);
+    this.logger.log("Entered the phone number");
+  
+    await this.runSearchBtn.click();
+    this.logger.log("Clicked on search button");
+    await new Promise(resolve => setTimeout(resolve, 5000));
+    await expect(page).toHaveTitle("Customer Service Workbench", { timeout: 10000 });
+  
+    await expect(this.homePageHeading).toBeVisible({ timeout: 10000 });
+    await expect(this.homePageHeading).toContainText("Customer Service Workbench");
+  
+    this.logger.log("Customer Service page is appeared");
+  }
 
 
-.nycrc file
+* but8 getting below error:
 
-{
-    "extends": "@istanbuljs/nyc-config-typescript",
-    "all": true,
-    "include": [
-        "src//*.ts"
-    ],
-    "exclude": [
-        "/.spec.ts",
-        "**/.test.ts"
-    ],
-    "reporter": [
-        "html",
-        "text"
-    ],
-    "sourceMap": true,
-    "instrument": true
-}
+Error: Timed out 10000ms waiting for expect(locator).toHaveTitle(expected)
+
+    Locator: locator(':root')
+    Expected string: "Customer Service Workbench"
+    Received string: ""
+    Call log:
+      - expect.toHaveTitle with timeout 10000ms
+      - waiting for locator(':root')
 
 
+       at ..\page-objects\cfAuto-objects\searchCustomer-page.ts:31
 
-global-setup.ts file
-
-import * as fs from 'fs'; 
-import * as path from 'path'; 
-import { chromium } from '@playwright/test';
-
-export default async function globalSetup() {  
-    
-await require('nyc').createInstance({ cwd: __dirname, reporter: ['text', 'html'], }).wrap();
-
-const browser = await chromium.launch(); 
-const context = await browser.newContext(); 
-await context.tracing.start({ screenshots: true, snapshots: true }); 
-await context.tracing.stop({ path: 'test-trace.zip' }); await browser.close(); }
+      29 |     this.logger.log("Clicked on search button");
+      30 |     await new Promise(resolve => setTimeout(resolve, 5000));
+    > 31 |     await expect(page).toHaveTitle("Customer Service Workbench", { timeout: 10000 });
+         |                        ^
+      32 |   
+      33 |     await expect(this.homePageHeading).toBeVisible({ timeout: 10000 });
+      34 |     await expect(this.homePageHeading).toContainText("Customer Service Workbench");
 
 
-global-teardown.ts file
-
-import * as fs from 'fs';
-import * as path from 'path';
-
-
-export default async function globalTeardown() {
-    const nycInstance = require('nyc');
-    const nyc = nycInstance.createInstance({
-        cwd: __dirname,
-        reporter: ['text', 'html'],
-    });
-
-    nyc.writeCoverageFile();
-    nyc.report();
-}
-
-
-
-this is the report showing in the console:
-
---------------|---------|----------|---------|---------|-------------------
-File          | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s
---------------|---------|----------|---------|---------|-------------------
-All files     |      50 |      100 |      50 |      50 | 
- demo-page.ts |      50 |      100 |      50 |      50 | 6
---------------|---------|----------|---------|---------|-------------------
+Please solve the issue and update the code.
