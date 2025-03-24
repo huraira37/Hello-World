@@ -1,12 +1,68 @@
-line 3, it's showing this error:
-
-File is a CommonJS module; it may be converted to an ES module.ts(80001)
-var require: NodeJS.Require
-(id: string) => any
-Used to import modules, JSON, and local files.
-
-@since — v0.1.13
+I implemented code Coverage in playwright automation framework. Can you explain below all files and with console report?
 
 
-"coverage": "nyc playwright test --headed && node inject-et-timestamp.js"
+.nycrc file
 
+{
+    "extends": "@istanbuljs/nyc-config-typescript",
+    "all": true,
+    "include": [
+        "src//*.ts"
+    ],
+    "exclude": [
+        "/.spec.ts",
+        "**/.test.ts"
+    ],
+    "reporter": [
+        "html",
+        "text"
+    ],
+    "sourceMap": true,
+    "instrument": true
+}
+
+
+
+global-setup.ts file
+
+import * as fs from 'fs'; 
+import * as path from 'path'; 
+import { chromium } from '@playwright/test';
+
+export default async function globalSetup() {  
+    
+await require('nyc').createInstance({ cwd: __dirname, reporter: ['text', 'html'], }).wrap();
+
+const browser = await chromium.launch(); 
+const context = await browser.newContext(); 
+await context.tracing.start({ screenshots: true, snapshots: true }); 
+await context.tracing.stop({ path: 'test-trace.zip' }); await browser.close(); }
+
+
+global-teardown.ts file
+
+import * as fs from 'fs';
+import * as path from 'path';
+
+
+export default async function globalTeardown() {
+    const nycInstance = require('nyc');
+    const nyc = nycInstance.createInstance({
+        cwd: __dirname,
+        reporter: ['text', 'html'],
+    });
+
+    nyc.writeCoverageFile();
+    nyc.report();
+}
+
+
+
+this is the report showing in the console:
+
+--------------|---------|----------|---------|---------|-------------------
+File          | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s
+--------------|---------|----------|---------|---------|-------------------
+All files     |      50 |      100 |      50 |      50 | 
+ demo-page.ts |      50 |      100 |      50 |      50 | 6
+--------------|---------|----------|---------|---------|-------------------
