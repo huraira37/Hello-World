@@ -1,29 +1,3 @@
-  public async searchCustomerCA(lastNameSelect: string, firstNameSelect: string, stateProvinceSelect: string, phoneNumber: string) {
-    const page = this.page;
-  
-    this.logger.log("Last name is " + lastNameSelect);
-    await this.lastName.fill(lastNameSelect);
-  
-    this.logger.log("First name is " + firstNameSelect);
-    await this.fristName.fill(firstNameSelect);
-  
-    this.logger.log("State is " + stateProvinceSelect);
-    await this.stateProvince.selectOption(stateProvinceSelect);
-  
-    this.logger.log("Phone number is " + phoneNumber);
-    await this.phoneNumber.fill(phoneNumber);
-    this.logger.log("Entered the phone number");
-  
-    await Promise.all([
-      page.waitForNavigation({ waitUntil: 'domcontentloaded' }),
-      await this.runSearchBtn.click()
-    ]);
-    // await this.runSearchBtn.click();
-    this.logger.log("Clicked on search button");
-    // await new Promise(resolve => setTimeout(resolve, 5000));
-    await expect(page).toHaveTitle("Customer Service Workbench", { timeout: 10000 });
-  
-    await expect(this.homePageHeading).toBeVisible({ timeout: 10000 });
-    await expect(this.homePageHeading).toContainText("Customer Service Workbench");
-  
-    this.logger.log("Customer Service page is appeared");
+As a contract worker providing services to Liberty Mutual, you play a role in keeping Liberty Mutual’s information secure.  You are not an employee of Liberty Mutual; rather, you are working on an assignment for which your employer has been contracted, and you have access to Liberty Mutual systems and/or information through that assignment.  You have a responsibility to safeguard Liberty Mutual’s systems and information. 
+
+Please review Liberty Mutual’s Cybersecurity Policy which, among other things, applies to non-employees performing work for, or on behalf of, Liberty Mutual.  Liberty Mutual expects all contract workers to abide by this policy in the course of performing work for, or on behalf of, the company.  Actions that compromise the security of certain types of information could place Liberty Mutual, or the responsible individual, at risk for criminal or civil penalties.
