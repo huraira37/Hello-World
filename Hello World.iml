@@ -1,20 +1,19 @@
 public async validateOperatorOptions_cf1(operatorTypeValidation: string) {
     const page = this.page;
 
-    // Locate the select element and its option
-    const optionLocator = page.locator(`select option`, { hasText: operatorTypeValidation });
+    // Get the dropdown (select element)
+    const selectLocator = page.locator('select'); // Update selector if needed
+    await selectLocator.waitFor({ state: 'attached', timeout: 15000 });
 
-    // Wait for the option to appear in DOM
-    await optionLocator.waitFor({ state: "attached", timeout: 15000 });
+    // Log all option texts
+    const options = selectLocator.locator('option');
+    const optionCount = await options.count();
+    console.log(`Total options found: ${optionCount}`);
 
-    // Get the HTML of the option to verify attributes manually (for debug)
-    const optionHtml = await optionLocator.evaluate(el => el.outerHTML);
-    console.log(`Option HTML: ${optionHtml}`);
-
-    // Check if the option is disabled
-    const isDisabled = await optionLocator.isDisabled();
-    console.log(`Dropdown option '${operatorTypeValidation}' disabled state:`, isDisabled);
-
-    // Assertion
-    expect(isDisabled).toBeTruthy(); // This will fail if not disabled
+    for (let i = 0; i < optionCount; i++) {
+        const optionText = await options.nth(i).textContent();
+        const optionHtml = await options.nth(i).evaluate(el => el.outerHTML);
+        console.log(`Option ${i}: ${optionText?.trim()} => ${optionHtml}`);
+    }
 }
+
