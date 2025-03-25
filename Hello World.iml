@@ -1,3 +1,44 @@
-As a contract worker providing services to Liberty Mutual, you play a role in keeping Liberty Mutual’s information secure.  You are not an employee of Liberty Mutual; rather, you are working on an assignment for which your employer has been contracted, and you have access to Liberty Mutual systems and/or information through that assignment.  You have a responsibility to safeguard Liberty Mutual’s systems and information. 
+This is my code:
 
-Please review Liberty Mutual’s Cybersecurity Policy which, among other things, applies to non-employees performing work for, or on behalf of, Liberty Mutual.  Liberty Mutual expects all contract workers to abide by this policy in the course of performing work for, or on behalf of, the company.  Actions that compromise the security of certain types of information could place Liberty Mutual, or the responsible individual, at risk for criminal or civil penalties.
+public async searchCustomerExtranet(phoneNumber: string) {
+
+    const page = this.page;
+    this.logger.log("Phone number is " + phoneNumber);
+    await this.phoneNumber.fill(phoneNumber);
+    this.logger.log("Entered the phone number");
+    await this.runSearchBtn.click();
+    this.logger.log("Clicked on search button");
+    page.waitForLoadState('domcontentloaded');
+    await new Promise(resolve => setTimeout(resolve, 5000));
+    await expect(page).toHaveTitle("Customer Service Workbench");
+    await new Promise(resolve => setTimeout(resolve, 5000));
+    await expect(this.cswPageHeading).toContainText("Customer Service Workbench");
+    this.logger.log("Customer Service page is appeared");
+  }
+
+
+
+
+*But getting below error:
+
+Error: Timed out 5000ms waiting for expect(locator).toHaveTitle(expected)
+
+    Locator: locator(':root')
+    Expected string: "Customer Service Workbench"
+    Received string: ""
+    Call log:
+      - expect.toHaveTitle with timeout 5000ms
+      - waiting for locator(':root')
+
+
+       at ..\page-objects\cfAuto-objects\searchCustomer-page.ts:66
+
+      64 |     page.waitForLoadState('domcontentloaded');
+      65 |     await new Promise(resolve => setTimeout(resolve, 5000));
+    > 66 |     await expect(page).toHaveTitle("Customer Service Workbench");
+         |                        ^
+      67 |     await new Promise(resolve => setTimeout(resolve, 5000));
+      68 |     await expect(this.cswPageHeading).toContainText("Customer Service Workbench");
+      69 |     this.logger.log("Customer Service page is appeared");
+
+Give me best solution and update the code
