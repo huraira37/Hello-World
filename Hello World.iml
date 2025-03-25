@@ -1,29 +1,5 @@
-public async changePolicy() {
-  try {
-    await this.page.waitForLoadState('networkidle');
+can you make a uniqe xpath please:
 
-    const elementsToCheck: { element: Locator | undefined; message: string }[] = [
-      { element: this.endorsementTC_Five, message: "Change Policy is Clicked for Endorsement TC Five" },
-      { element: this.endorsementTC_Six, message: "Change Policy is Clicked for Endorsement TC Six" },
-      { element: this.endorsementTC_Seven, message: "Change Policy is Clicked for Endorsement TC Seven" },
-      { element: this.endorsementTC_Eight, message: "Change Policy is Clicked for Endorsement TC Eight" },
-      { element: this.endorsementTC_Nine, message: "Change Policy is Clicked for Endorsement TC Nine" },
-      { element: this.endorsementTC_Ten, message: "Change Policy is Clicked for Endorsement TC Ten" },
-      { element: this.costNewTC_One, message: "Change Policy is Clicked for Cost New TC" },
-      { element: this.restrictedOperatorTC_SC, message: "Change Policy is Clicked for Restricted Operator TC SC" },
-      { element: this.restrictedOperatorTC_CA, message: "Change Policy is Clicked for Restricted Operator TC CA" },
-    ];
-
-    for (const { element, message } of elementsToCheck) {
-      if (element && await element.isVisible()) {
-        await element.click();
-        console.log(message);
-        return;
-      }
-    }
-
-    console.log("Element not found, Condition does not match");
-  } catch (error) {
-    console.error("Error occurred in changePolicy:", error);
-  }
-}
+<a tabindex="104" href="javascript:CSWCVC_linkChangePolicy(document.forms.BaseFormBean,'IF',  'Auto', 'ABT-291-114889-40', '998361180277151', '998611178637327', 'V', '2024-03-26', 'Y', '2024-03-26', '2025-03-26', 'TX', '', 'GRS')" onclick="CSWCVC_verintServiceCall(document.forms.BaseFormBean, 'N9997144', 'TX', '', 'Auto', '', 'ChangePolicy05', this)">
+							Yes
+						</a>
