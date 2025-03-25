@@ -1,25 +1,29 @@
 public async changePolicy() {
-  await this.page.waitForLoadState('networkidle');
+  try {
+    await this.page.waitForLoadState('networkidle');
 
-  const elementsToCheck: { element: Locator; message: string }[] = [
-    { element: this.endorsementTC_Five, message: "Change Policy is Clicked for Endorsement TC Five" },
-    { element: this.endorsementTC_Six, message: "Change Policy is Clicked for Endorsement TC Six" },
-    { element: this.endorsementTC_Seven, message: "Change Policy is Clicked for Endorsement TC Seven" },
-    { element: this.endorsementTC_Eight, message: "Change Policy is Clicked for Endorsement TC Eight" },
-    { element: this.endorsementTC_Nine, message: "Change Policy is Clicked for Endorsement TC Nine" },
-    { element: this.endorsementTC_Ten, message: "Change Policy is Clicked for Endorsement TC Ten" },
-    { element: this.costNewTC_One, message: "Change Policy is Clicked for Cost New TC" },
-    { element: this.restrictedOperatorTC_SC, message: "Change Policy is Clicked for Restricted Operator TC SC" },
-    { element: this.restrictedOperatorTC_CA, message: "Change Policy is Clicked for Restricted Operator TC CA" },
-  ];
+    const elementsToCheck: { element: Locator | undefined; message: string }[] = [
+      { element: this.endorsementTC_Five, message: "Change Policy is Clicked for Endorsement TC Five" },
+      { element: this.endorsementTC_Six, message: "Change Policy is Clicked for Endorsement TC Six" },
+      { element: this.endorsementTC_Seven, message: "Change Policy is Clicked for Endorsement TC Seven" },
+      { element: this.endorsementTC_Eight, message: "Change Policy is Clicked for Endorsement TC Eight" },
+      { element: this.endorsementTC_Nine, message: "Change Policy is Clicked for Endorsement TC Nine" },
+      { element: this.endorsementTC_Ten, message: "Change Policy is Clicked for Endorsement TC Ten" },
+      { element: this.costNewTC_One, message: "Change Policy is Clicked for Cost New TC" },
+      { element: this.restrictedOperatorTC_SC, message: "Change Policy is Clicked for Restricted Operator TC SC" },
+      { element: this.restrictedOperatorTC_CA, message: "Change Policy is Clicked for Restricted Operator TC CA" },
+    ];
 
-  for (const { element, message } of elementsToCheck) {
-    if (await element.isVisible()) {
-      await element.click();
-      console.log(message);
-      return;
+    for (const { element, message } of elementsToCheck) {
+      if (element && await element.isVisible()) {
+        await element.click();
+        console.log(message);
+        return;
+      }
     }
-  }
 
-  console.log("Element not found, Condition does not match");
+    console.log("Element not found, Condition does not match");
+  } catch (error) {
+    console.error("Error occurred in changePolicy:", error);
+  }
 }
