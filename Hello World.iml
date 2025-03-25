@@ -1,5 +1,4 @@
-can you make a uniqe xpath please:
+//a[contains(@onclick, "ChangePolicy05") and normalize-space(text())="Yes"]
 
-<a tabindex="104" href="javascript:CSWCVC_linkChangePolicy(document.forms.BaseFormBean,'IF',  'Auto', 'ABT-291-114889-40', '998361180277151', '998611178637327', 'V', '2024-03-26', 'Y', '2024-03-26', '2025-03-26', 'TX', '', 'GRS')" onclick="CSWCVC_verintServiceCall(document.forms.BaseFormBean, 'N9997144', 'TX', '', 'Auto', '', 'ChangePolicy05', this)">
-							Yes
-						</a>
+
+//a[contains(@href, "CSWCVC_linkChangePolicy") and contains(@href, "'ABT-291-114889-40'") and normalize-space(.)='Yes']
