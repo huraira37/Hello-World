@@ -1,4 +1,33 @@
-//a[contains(@onclick, "ChangePolicy05") and normalize-space(text())="Yes"]
+This is my code: it should be recieved true but recieved false.
+
+ public async validateOperatorOptions_cf1(operatorTypeValidation: string) {
+    const page = this.page;
+    const locator = this.restrictedOperator_cf1.locator(`//option[text()='${operatorTypeValidation}']`);
+    await locator.waitFor({ state: "attached", timeout: 15000 });
+    const isDisabled = await locator.isDisabled();
+    console.log(`Dropdown option '${operatorTypeValidation}' disabled state:`, isDisabled);
+    expect(isDisabled).toBeTruthy();
+}
 
 
-//a[contains(@href, "CSWCVC_linkChangePolicy") and contains(@href, "'ABT-291-114889-40'") and normalize-space(.)='Yes']
+
+
+
+
+
+**but getting error:
+ Error: expect(received).toBeTruthy()
+
+    Received: false
+
+       at ..\page-objects\cfAuto-objects\insureds-operator-page.ts:76
+
+      74 |     const isDisabled = await locator.isDisabled();
+      75 |     console.log(`Dropdown option '${operatorTypeValidation}' disabled state:`, isDisabled);
+    > 76 |     expect(isDisabled).toBeTruthy();
+         |                        ^
+      77 | }
+      78 |
+      79 |   public async verifyRestrictedOperatorAlert(operatorTypeValidation: string, operaterSelection: string) {
+
+Please solve the issue and update code.
