@@ -1,42 +1,25 @@
-This is my code:
+public async changePolicy() {
+  await this.page.waitForLoadState('networkidle');
 
-  public async changePolicy() {
-    await this.page.waitForLoadState('networkidle');
-    if (await this.endorsementTC_Five.isVisible()) {
-      this.endorsementTC_Five.click();
-      console.log("Change Policy is Clicked for Endorsement TC Five");
-    } else if (await this.endorsementTC_Six.isVisible()) {
-      this.endorsementTC_Six.click();
-      console.log("Change Policy is Clicked for Endorsement TC Six");
-    } else if (await this.endorsementTC_Seven.isVisible()) {
-      this.endorsementTC_Seven.click();
-      console.log("Change Policy is Clicked for Endorsement TC Seven");
-    } else if (await this.endorsementTC_Eight.isVisible()) {
-      this.endorsementTC_Eight.click();
-      console.log("Change Policy is Clicked for Endorsement TC Eight");
-    } else if (await this.endorsementTC_Nine.isVisible()) {
-      this.endorsementTC_Nine.click();
-      console.log("Change Policy is Clicked for Endorsement TC Nine");
-    } else if (await this.endorsementTC_Ten.isVisible()) {
-      this.endorsementTC_Ten.click();
-      console.log("Change Policy is Clicked for Endorsement TC Ten");
-    } else if (await this.costNewTC_One.isVisible()) {
-      this.costNewTC_One.click();
-      console.log("Change Policy is Clicked for Cost New TC");
-    } else if (await this.restrictedOperatorTC_SC.isVisible()) {
-      this.restrictedOperatorTC_SC.click();
-      console.log("Change Policy is Clicked for Restricted Operator TC SC");
-    } else if (await this.restrictedOperatorTC_CA.isVisible()) {
-      this.restrictedOperatorTC_CA.click();
-      console.log("Change Policy is Clicked for Restricted Operator TC CA");
-    } else
-      console.log("Element not found, Condition does not match");
+  const elementsToCheck: { element: Locator; message: string }[] = [
+    { element: this.endorsementTC_Five, message: "Change Policy is Clicked for Endorsement TC Five" },
+    { element: this.endorsementTC_Six, message: "Change Policy is Clicked for Endorsement TC Six" },
+    { element: this.endorsementTC_Seven, message: "Change Policy is Clicked for Endorsement TC Seven" },
+    { element: this.endorsementTC_Eight, message: "Change Policy is Clicked for Endorsement TC Eight" },
+    { element: this.endorsementTC_Nine, message: "Change Policy is Clicked for Endorsement TC Nine" },
+    { element: this.endorsementTC_Ten, message: "Change Policy is Clicked for Endorsement TC Ten" },
+    { element: this.costNewTC_One, message: "Change Policy is Clicked for Cost New TC" },
+    { element: this.restrictedOperatorTC_SC, message: "Change Policy is Clicked for Restricted Operator TC SC" },
+    { element: this.restrictedOperatorTC_CA, message: "Change Policy is Clicked for Restricted Operator TC CA" },
+  ];
+
+  for (const { element, message } of elementsToCheck) {
+    if (await element.isVisible()) {
+      await element.click();
+      console.log(message);
+      return;
+    }
   }
 
-
-
-
-*But getting error:
-
-
-Can you make above code more standard.
+  console.log("Element not found, Condition does not match");
+}
