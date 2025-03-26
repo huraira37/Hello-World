@@ -1,16 +1,12 @@
-found the error in the Install Monocart CLI.
+- name: Install Monocart CLI # ✅ FIXED
+  run: npm install -g @monocart/cli
 
+- name: Merge Monocart reports into one # ✅ FIXED
+  run: |
+    mkdir merged-results
+    find ./all-artifacts -type f -name "result.json" -exec cp {} merged-results/ \;
 
-Run npm install -g @monocart/collector
-npm error code E404
-npm error 404 Not Found - GET https://registry.npmjs.org/@monocart%2fcollector - Not found
-npm error 404
-npm error 404  '@monocart/collector@*' is not in this registry.
-npm error 404
-npm error 404 Note that you can also install from a
-npm error 404 tarball, folder, http url, or git url.
-npm error A complete log of this run can be found in: /home/runner/.npm/_logs/2025-03-26T21_37_40_073Z-debug-0.log
-Error: Process completed with exit code 1.
+    echo "Found result files:"
+    ls -la merged-results
 
-
-please solve it
+    npx monocart merge merged-results/*.json -o ./final-monocart-report
