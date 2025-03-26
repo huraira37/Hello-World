@@ -1,1 +1,46 @@
-after updating yaml according to your suggestion final report is generated in the Aggregate All Artifacts section, and all jobs report generated as a each separate folder. Is it possible, inside the final report folder can you make just one Monocart report for all jobs and in one dashboard I can see all jobs repprt? if so please update my yaml file accordingly and highlighted where you will update. don't delete my steps from yaml, when you will update yaml please make sequentially.
+  aggregate:
+    name: Aggregate All Artifacts
+    runs-on: ubuntu-latest
+    needs: test
+    if: always()
+    steps:
+    - name: Download all artifacts
+      uses: actions/download-artifact@v4
+      with:
+        path: ./all-artifacts  # ✅ unchanged
+
+    - name: List all downloaded files
+      run: |
+        echo "Downloaded files:"
+        find ./all-artifacts
+
+    - name: Install Monocart CLI # 🆕 NEW STEP
+      run: npm install -g @monocart/collector
+
+    - name: Merge Monocart reports into one # 🆕 NEW STEP
+      run: |
+        mkdir merged-results
+        find ./all-artifacts -type f -name "result.json" -exec cp {} merged-results/ \;
+
+        echo "Found result files:"
+        ls -la merged-results
+
+        npx monocart-collector merge merged-results/*.json -o ./final-monocart-report
+
+    - name: Upload unified Monocart report # 🆕 NEW STEP
+      uses: actions/upload-artifact@v4
+      with:
+        name: Unified-Monocart-Report
+        path: ./final-monocart-report
+        retention-days: 15
+
+    - name: Zip all results # ✅ unchanged
+      run: |
+        zip -r Final-Report.zip ./all-artifacts
+
+    - name: Upload Final Combined Report ZIP # ✅ unchanged
+      uses: actions/upload-artifact@v4
+      with:
+        name: Final-Combined-Report
+        path: Final-Report.zip
+        retention-days: 15
