@@ -1,12 +1,50 @@
-- name: Install Monocart CLI # ✅ FIXED
-  run: npm install -g @monocart/cli
+  aggregate:
+    name: Aggregate All Artifacts
+    runs-on: ubuntu-latest
+    needs: test
+    if: always()
+    steps:
+    - name: Download all artifacts
+      uses: actions/download-artifact@v4
+      with:
+        path: ./all-artifacts
 
-- name: Merge Monocart reports into one # ✅ FIXED
-  run: |
-    mkdir merged-results
-    find ./all-artifacts -type f -name "result.json" -exec cp {} merged-results/ \;
+    - name: List all downloaded files
+      run: |
+        echo "Downloaded files:"
+        find ./all-artifacts
 
-    echo "Found result files:"
-    ls -la merged-results
+    - name: Set up Node.js for Monocart merge # 🆕 required for npx usage
+      uses: actions/setup-node@v4
+      with:
+        node-version: 20
 
-    npx monocart merge merged-results/*.json -o ./final-monocart-report
+    - name: Install monocart-collector locally # ✅ FIXED
+      run: npm install monocart-collector
+
+    - name: Merge Monocart reports into one # ✅ FIXED
+      run: |
+        mkdir merged-results
+        find ./all-artifacts -type f -name "result.json" -exec cp {} merged-results/ \;
+
+        echo "Found result files:"
+        ls -la merged-results
+
+        npx monocart-collector merge merged-results/*.json -o ./final-monocart-report
+
+    - name: Upload unified Monocart report
+      uses: actions/upload-artifact@v4
+      with:
+        name: Unified-Monocart-Report
+        path: ./final-monocart-report
+        retention-days: 15
+
+    - name: Zip all results
+      run: zip -r Final-Report.zip ./all-artifacts
+
+    - name: Upload Final Combined Report ZIP
+      uses: actions/upload-artifact@v4
+      with:
+        name: Final-Combined-Report
+        path: Final-Report.zip
+        retention-days: 15
