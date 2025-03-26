@@ -1,46 +1,16 @@
-  aggregate:
-    name: Aggregate All Artifacts
-    runs-on: ubuntu-latest
-    needs: test
-    if: always()
-    steps:
-    - name: Download all artifacts
-      uses: actions/download-artifact@v4
-      with:
-        path: ./all-artifacts  # ✅ unchanged
+found the error in the Install Monocart CLI.
 
-    - name: List all downloaded files
-      run: |
-        echo "Downloaded files:"
-        find ./all-artifacts
 
-    - name: Install Monocart CLI # 🆕 NEW STEP
-      run: npm install -g @monocart/collector
+Run npm install -g @monocart/collector
+npm error code E404
+npm error 404 Not Found - GET https://registry.npmjs.org/@monocart%2fcollector - Not found
+npm error 404
+npm error 404  '@monocart/collector@*' is not in this registry.
+npm error 404
+npm error 404 Note that you can also install from a
+npm error 404 tarball, folder, http url, or git url.
+npm error A complete log of this run can be found in: /home/runner/.npm/_logs/2025-03-26T21_37_40_073Z-debug-0.log
+Error: Process completed with exit code 1.
 
-    - name: Merge Monocart reports into one # 🆕 NEW STEP
-      run: |
-        mkdir merged-results
-        find ./all-artifacts -type f -name "result.json" -exec cp {} merged-results/ \;
 
-        echo "Found result files:"
-        ls -la merged-results
-
-        npx monocart-collector merge merged-results/*.json -o ./final-monocart-report
-
-    - name: Upload unified Monocart report # 🆕 NEW STEP
-      uses: actions/upload-artifact@v4
-      with:
-        name: Unified-Monocart-Report
-        path: ./final-monocart-report
-        retention-days: 15
-
-    - name: Zip all results # ✅ unchanged
-      run: |
-        zip -r Final-Report.zip ./all-artifacts
-
-    - name: Upload Final Combined Report ZIP # ✅ unchanged
-      uses: actions/upload-artifact@v4
-      with:
-        name: Final-Combined-Report
-        path: Final-Report.zip
-        retention-days: 15
+please solve it
