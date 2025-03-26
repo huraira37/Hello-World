@@ -1,19 +1,36 @@
-public async validateOperatorOptions_cf1(operatorTypeValidation: string) {
-    const page = this.page;
+this is my code:
 
-    // Get the dropdown (select element)
-    const selectLocator = page.locator('select'); // Update selector if needed
-    await selectLocator.waitFor({ state: 'attached', timeout: 15000 });
+  public async additionalInfoValidation(additionalRunwayAlphaInfo: string, rateStatus: string) {
+    try {
+        await expect(this.additionalPopUp).toBeVisible({ timeout: 5000 });
 
-    // Log all option texts
-    const options = selectLocator.locator('option');
-    const optionCount = await options.count();
-    console.log(`Total options found: ${optionCount}`);
+        await expect(this.additionalPopUp).toContainText("Additional Information Review Validation", { timeout: 30000 });
 
-    for (let i = 0; i < optionCount; i++) {
-        const optionText = await options.nth(i).textContent();
-        const optionHtml = await options.nth(i).evaluate(el => el.outerHTML);
-        console.log(`Option ${i}: ${optionText?.trim()} => ${optionHtml}`);
+        await this.additionalRunwayAlphaInfo.selectOption(additionalRunwayAlphaInfo);
+        this.logger.log(`Additional Runway Alpha Info selected: ${additionalRunwayAlphaInfo}`);
+
+        await this.submitDecision.click();
+        this.logger.log("Clicked on submit button");
+
+        await this.page.waitForLoadState('domcontentloaded');
+
+        await this.reRateButton.click();
+        await expect(this.rateStatusValid).toContainText(rateStatus, { timeout: 20000 });
+        this.logger.log("Validated the Rate status");
+
+        await this.headerNext.click();
+        this.logger.log("Clicked Next");
+
+    } catch (error) {
+        this.logger.log("Popup did not appear, proceeding without it.");
+
+        await this.reRateButton.click();
+        await expect(this.rateStatusValid).toContainText(rateStatus, { timeout: 20000 });
+        this.logger.log("Validated Rate status without popup");
+
+        await this.headerNext.click();
+        this.logger.log("Clicked Next");
     }
 }
 
+giving error most of the time. some times element find sometimes not. can you standarize the code and solve the issue?
