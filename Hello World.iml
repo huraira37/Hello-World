@@ -1,28 +1,50 @@
-jobs:
-  aggregate:
-    name: Aggregate All Artifacts and Merge Reports
-    runs-on: ubuntu-latest
-    needs: test
+needs: test
     if: always()
     steps:
-      - name: Checkout repo
-        uses: actions/checkout@v4
+    - name: Checkout repo
+      uses: actions/checkout@v4
 
-      - name: Update NPM Registry URL
-        run: npm config set registry https://registry.npmjs.org/
+    - name: Configure .npmrc for internal registry # 🆕
+      run: |
+        echo "registry=https://packages.lmig.com/api/npm/npm" > ~/.npmrc
+        echo "always-auth=true" >> ~/.npmrc
+        echo "//packages.lmig.com/api/npm/npm/:_authToken=${{ secrets.NPM_AUTH_TOKEN }}" >> ~/.npmrc
 
-      - name: Clear NPM Cache
-        run: npm cache clean --force
+    - name: Download all artifacts
+      uses: actions/download-artifact@v4
+      with:
+        path: ./all-artifacts
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
+    - name: List all downloaded files
+      run: find ./all-artifacts
 
-      - name: Install Monocart Reporter
-        run: npm install monocart-reporter --save-dev
+    - name: Set up Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: 20
 
-      - name: Re-enable Strict SSL
-        run: npm config set strict-ssl true
+    - name: Install monocart-reporter
+      run: npm install monocart-reporter --save-dev
 
-      # Add the remaining steps of your workflow here
+    - name: Merge Monocart result.json reports
+      run: |
+        mkdir -p merged-jsons
+        find ./all-artifacts -type f -name "result.json" -exec cp {} merged-jsons/ \;
+        npx monocart-reporter merge merged-jsons/*.json -o ./final-monocart-report
+
+    - name: Upload Unified Monocart Dashboard
+      uses: actions/upload-artifact@v4
+      with:
+        name: Unified-Monocart-Report
+        path: ./final-monocart-report
+        retention-days: 15
+
+    - name: Zip all raw artifacts
+      run: zip -r Final-Report.zip ./all-artifacts
+
+    - name: Upload Final Combined Report ZIP
+      uses: actions/upload-artifact@v4
+      with:
+        name: Final-Combined-Report
+        path: Final-Report.zip
+        retention-days: 15
