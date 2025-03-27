@@ -1,30 +1,39 @@
-same issue: under this step: Install dependencies from lock file (including monocart-reporter) found error
+  aggregate:
+    name: Aggregate All Artifacts and Merge Reports
+    runs-on: ubuntu-latest
+    needs: test
+    if: always()
+    steps:
+    - name: Checkout repo
+      uses: actions/checkout@v4
 
+    - name: Download all artifacts
+      uses: actions/download-artifact@v4
+      with:
+        path: ./all-artifacts
 
-  npm ci
-  shell: /usr/bin/bash -e {0}
-  
-npm error code E401
-npm error Incorrect or missing password.
-npm error If you were trying to login, change your password, create an
-npm error authentication token or enable two-factor authentication then
-npm error that means you likely typed your password in incorrectly.
-npm error Please try again, or recover your password at:
-npm error   https://www.npmjs.com/forgot
-npm error
-npm error If you were doing some other operation then your saved credentials are
-npm error probably out of date. To correct this please try logging in again with:
-npm error   npm login
-npm error A complete log of this run can be found in: /home/runner/.npm/_logs/2025-03-27T14_05_34_320Z-debug-0.log
-Error: Process completed with exit code 1.npm error code E404
-npm error 404 Not Found - GET https://registry.npmjs.org/@monocart%2fcollector - Not found
-npm error 404
-npm error 404  '@monocart/collector@*' is not in this registry.
-npm error 404
-npm error 404 Note that you can also install from a
-npm error 404 tarball, folder, http url, or git url.
-npm error A complete log of this run can be found in: /home/runner/.npm/_logs/2025-03-26T21_37_40_073Z-debug-0.log
-Error: Process completed with exit code 1.
+    - name: List all downloaded files
+      run: find ./all-artifacts
 
+    - name: Merge Monocart result.json reports (no NPM install needed ✅)
+      run: |
+        mkdir -p merged-jsons
+        find ./all-artifacts -type f -name "result.json" -exec cp {} merged-jsons/ \;
+        npx --prefix ./tools/monocart monocart-reporter merge merged-jsons/*.json -o ./final-monocart-report
 
-please solve it
+    - name: Upload Unified Monocart Dashboard
+      uses: actions/upload-artifact@v4
+      with:
+        name: Unified-Monocart-Report
+        path: ./final-monocart-report
+        retention-days: 15
+
+    - name: Zip all raw artifacts
+      run: zip -r Final-Report.zip ./all-artifacts
+
+    - name: Upload Final Combined Report ZIP
+      uses: actions/upload-artifact@v4
+      with:
+        name: Final-Combined-Report
+        path: Final-Report.zip
+        retention-days: 15
