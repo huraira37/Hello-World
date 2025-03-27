@@ -1,50 +1,14 @@
-needs: test
-    if: always()
-    steps:
-    - name: Checkout repo
-      uses: actions/checkout@v4
+still showing error in the step: install monocart report inside aggregate artifact:
 
-    - name: Configure .npmrc for internal registry # 🆕
-      run: |
-        echo "registry=https://packages.lmig.com/api/npm/npm" > ~/.npmrc
-        echo "always-auth=true" >> ~/.npmrc
-        echo "//packages.lmig.com/api/npm/npm/:_authToken=${{ secrets.NPM_AUTH_TOKEN }}" >> ~/.npmrc
+npm error authentication token or enable two-factor authentication then
+npm error that means you likely typed your password in incorrectly.
+npm error Please try again, or recover your password at:
+npm error   https://www.npmjs.com/forgot
+npm error
+npm error If you were doing some other operation then your saved credentials are
+npm error probably out of date. To correct this please try logging in again with:
+npm error   npm login
+npm error A complete log of this run can be found in: /home/runner/.npm/_logs/2025-03-27T13_19_23_561Z-debug-0.log
+Error: Process completed with exit code 1.
 
-    - name: Download all artifacts
-      uses: actions/download-artifact@v4
-      with:
-        path: ./all-artifacts
-
-    - name: List all downloaded files
-      run: find ./all-artifacts
-
-    - name: Set up Node.js
-      uses: actions/setup-node@v4
-      with:
-        node-version: 20
-
-    - name: Install monocart-reporter
-      run: npm install monocart-reporter --save-dev
-
-    - name: Merge Monocart result.json reports
-      run: |
-        mkdir -p merged-jsons
-        find ./all-artifacts -type f -name "result.json" -exec cp {} merged-jsons/ \;
-        npx monocart-reporter merge merged-jsons/*.json -o ./final-monocart-report
-
-    - name: Upload Unified Monocart Dashboard
-      uses: actions/upload-artifact@v4
-      with:
-        name: Unified-Monocart-Report
-        path: ./final-monocart-report
-        retention-days: 15
-
-    - name: Zip all raw artifacts
-      run: zip -r Final-Report.zip ./all-artifacts
-
-    - name: Upload Final Combined Report ZIP
-      uses: actions/upload-artifact@v4
-      with:
-        name: Final-Combined-Report
-        path: Final-Report.zip
-        retention-days: 15
+please solve this?
