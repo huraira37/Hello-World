@@ -1,7 +1,47 @@
-still showing this error under install monocart-reporter in the aggregate artifact:
-Run npm install monocart-reporter --save-dev
-npm error code CERT_HAS_EXPIRED
-npm error errno CERT_HAS_EXPIRED
-npm error request to https://registry.npmjs.org/monocart-reporter failed, reason: certificate has expired
-npm error A complete log of this run can be found in: /home/runner/.npm/_logs/2025-03-27T13_36_12_270Z-debug-0.log
-Error: Process completed with exit code 1.
+  aggregate:
+    name: Aggregate All Artifacts and Merge Reports
+    runs-on: ubuntu-latest
+    needs: test
+    if: always()
+    steps:
+    - name: Checkout repo
+      uses: actions/checkout@v4
+
+    - name: Download all artifacts
+      uses: actions/download-artifact@v4
+      with:
+        path: ./all-artifacts
+
+    - name: List all downloaded files
+      run: find ./all-artifacts
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: 20
+
+    - name: Install dependencies from lock file (including monocart-reporter) # ✅ replaces install step
+      run: npm ci
+
+    - name: Merge Monocart result.json reports
+      run: |
+        mkdir -p merged-jsons
+        find ./all-artifacts -type f -name "result.json" -exec cp {} merged-jsons/ \;
+        npx monocart-reporter merge merged-jsons/*.json -o ./final-monocart-report
+
+    - name: Upload Unified Monocart Dashboard
+      uses: actions/upload-artifact@v4
+      with:
+        name: Unified-Monocart-Report
+        path: ./final-monocart-report
+        retention-days: 15
+
+    - name: Zip all raw artifacts
+      run: zip -r Final-Report.zip ./all-artifacts
+
+    - name: Upload Final Combined Report ZIP
+      uses: actions/upload-artifact@v4
+      with:
+        name: Final-Combined-Report
+        path: Final-Report.zip
+        retention-days: 15
