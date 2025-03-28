@@ -1,12 +1,20 @@
-const { merge } = require('monocart-reporter');
+import { merge } from 'monocart-reporter';
 
-(async () => {
-  await merge({
-    files: ['../../all-artifacts/**/index.json'],
-    output: './merged-report'
-  });
-  console.log('✅ Monocart report merged successfully.');
-})();
+const run = async () => {
+  try {
+    await merge({
+      files: ['../../all-artifacts/**/index.json'],
+      output: './merged-report'
+    });
+    console.log('✅ Monocart report merged successfully.');
+  } catch (error) {
+    console.error('❌ Error merging Monocart reports:', error);
+    process.exit(1);
+  }
+};
+
+run();
+
 
 
 
