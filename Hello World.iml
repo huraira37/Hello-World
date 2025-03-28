@@ -1,40 +1,10 @@
-merge-reports: 
-  needs: test 
-  runs-on: ubuntu-latest-16-core-internal
-  steps: 
-    - name: Checkout repo
-      uses: actions/checkout@v4
+getting error under install dependencies:
 
-    - name: Download all test results 
-      uses: actions/download-artifact@v4 
-      with: 
-        path: all-artifacts
-
-    - name: Cache npm dependencies
-      uses: actions/cache@v3
-      with:
-        path: ~/.npm
-        key: ${{ runner.os }}-npm-cache
-
-    - name: Set npm config to avoid SSL issues
-      run: npm config set strict-ssl false
-
-    - name: Install dependencies
-      run: npm ci
-      working-directory: ./Playwright-Automation
-
-    - name: Merge Monocart reports
-      run: |
-        npx monocart merge ../../all-artifacts/**/index.json -o results/merged-report.json
-      working-directory: ./Playwright-Automation
-
-    - name: Generate final Monocart report
-      run: |
-        npx monocart merge results/merged-report.json -o merged-report
-      working-directory: ./Playwright-Automation
-
-    - name: Upload merged report
-      uses: actions/upload-artifact@v4
-      with:
-        name: merged-report
-        path: Playwright-Automation/merged-report
+Run npm ci
+  npm ci
+  shell: /usr/bin/bash -e {0}
+  
+npm error code E503
+npm error 503 Service Unavailable - GET https://registry.npmjs.org/ylru/-/ylru-1.4.0.tgz
+npm error A complete log of this run can be found in: /home/runner/.npm/_logs/2025-03-28T19_21_54_031Z-debug-0.log
+Error: Process completed with exit code 1.
