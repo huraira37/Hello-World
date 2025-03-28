@@ -1,2 +1,18 @@
-- name: Set npm registry to Cloudflare mirror (to avoid E503)
-      run: npm config set registry https://registry.npmmirror.com/
+getting error under merge monocart report step:
+
+1s
+Run npx monocart merge ../../all-artifacts/**/index.json -o results/merged-report.json
+  
+error: unknown command 'merge'
+┌──────────┬──────────────────────────────────────┐
+│ monocart │ v1.1.3                               │
+│ Node.js  │ v18.20.7                             │
+│ Hostname │ runner                               │
+│ Platform │ linux                                │
+│ CPUs     │ 16                                   │
+│ Memory   │ free: 61.2GB / total: 62.8GB = 2.5%  │
+│ Process  │ rss: 50.9MB ext: 875.2KB heap: 66.2% │
+└──────────┴──────────────────────────────────────┘
+Error: Process completed with exit code 1.
+
+solve it, and highlight where you will update yaml
