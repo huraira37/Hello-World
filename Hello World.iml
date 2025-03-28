@@ -1,33 +1,4 @@
-* Install dependencies
-
-Run npm ci
-  
-npm warn deprecated inflight@1.0.6: This module is not supported, and leaks memory. Do not use it. Check out lru-cache if you want a good and tested way to coalesce async requests by a key value, which is much more comprehensive and powerful.
-npm warn deprecated @types/log4js@2.3.5: This is a stub types definition for log4js (https://github.com/nomiddlename/log4js-node). log4js provides its own type definitions, so you don't need @types/log4js installed!
-npm warn deprecated glob@7.2.3: Glob versions prior to v9 are no longer supported
-added 267 packages in 11s
-41 packages are looking for funding
-  run `npm fund` for details
-
-
-* Merge Monocart reports using monocart-reporter
-
-Run node merge-monocart.mjs
-  
-[MR] merging report data ...
-[MR] invalid report data list: [object Object]
-Monocart report merged successfully.
-
-
-* Upload merged report
-
-Run actions/upload-artifact@v4
-Warning: No files were found with the provided path: Playwright-Automation/merged-report. No artifacts will be uploaded.
-
-
-*So I'm getting error. it's showing invalid report data list: [object Object] and No files were found with the provided path: Playwright-Automation/merged-report. No artifacts will be uploaded.
-
-Please can you read carefully and solve the issue. and highlight where you will update in yaml
-
-
-
+- name: Debug: List merged report directory
+      run: |
+        echo "Checking contents of merged-report:"
+        ls -R merged-report || echo "merged-report folder not found"
