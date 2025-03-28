@@ -1,10 +1,2 @@
-getting error under install dependencies:
-
-Run npm ci
-  npm ci
-  shell: /usr/bin/bash -e {0}
-  
-npm error code E503
-npm error 503 Service Unavailable - GET https://registry.npmjs.org/ylru/-/ylru-1.4.0.tgz
-npm error A complete log of this run can be found in: /home/runner/.npm/_logs/2025-03-28T19_21_54_031Z-debug-0.log
-Error: Process completed with exit code 1.
+- name: Set npm registry to Cloudflare mirror (to avoid E503)
+      run: npm config set registry https://registry.npmmirror.com/
