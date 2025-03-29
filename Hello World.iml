@@ -1,82 +1,29 @@
+Here it is. please solve the issue now
 
-    # ✅ Download Final-Report.zip created by the aggregate job
-    - name: Download Final Combined Artifact Zip
-      uses: actions/download-artifact@v4
-      with:
-        name: Final-Combined-Report
-        path: extracted
+*Full Tree Dump (debug)
 
-    # ✅ Unzip the artifact into the working directory (flatten folder structure)
-    - name: Unzip combined report
-      run: |
-        unzip -q extracted/Final-Report.zip -d .
-
-    # ✅ Debug: Show all files and their types inside all-artifacts
-    - name: Full Tree Dump (Debug)
-      run: |
-        echo "===== BEGIN DEBUG: file list & types ====="
-        find all-artifacts -type f -exec file {} \;
-        echo "===== END DEBUG ====="
-
-    - name: Cache npm dependencies
-      uses: actions/cache@v3
-      with:
-        path: ~/.npm
-        key: ${{ runner.os }}-npm-cache
-
-    - name: Set npm registry to Cloudflare mirror (avoid E503)
-      run: npm config set registry https://registry.npmmirror.com/
-
-    - name: Install dependencies
-      run: npm ci
-      working-directory: ./Playwright-Automation
-
-    # ✅ Merge Monocart reports with debug printout of file paths
-    - name: Merge Monocart reports using monocart-reporter
-      run: node merge-monocart.mjs
-      working-directory: ./Playwright-Automation
-
-    # ✅ List final merged report folder to verify success
-    - name: Debug: List merged report directory
-      run: |
-        echo "Checking contents of merged-report:"
-        ls -R merged-report || echo "merged-report folder not found"
-
-    - name: Upload merged report
-      uses: actions/upload-artifact@v4
-      with:
-        name: merged-report
-        path: merged-report
+Run echo "===== BEGIN DEBUG: file list & types ====="
+===== BEGIN DEBUG: file list & types =====
+all-artifacts/Monocart-Inspection ScoreCard Tests Group 10/index.html: HTML document, ASCII text, with very long lines (56033)
+all-artifacts/Monocart-Inspection ScoreCard Tests Group 10/attachments/8ce6b4e3d8a104a1fb2d250288b3fae399295612.webm: WebM
+all-artifacts/Monocart-Inspection ScoreCard Tests Group 10/index.json: ASCII text, with very long lines (13381)
+all-artifacts/Test-Videos-Inspection ScoreCard Tests Group 10/cf_PropertyTest-inspection-f1fe4-ONST-NO-INSP-pop-up-at-Bind-Google-Chrome/video.webm: WebM
+all-artifacts/Full-Video-Restrict Operator Tests Group 6/test_execution.mp4: ISO Media, MP4 Base Media v1 [ISO 14496-12:2003]
+all-artifacts/Test-Videos-Restrict Operator Tests Group 6/cf_AutoTest-restrictedOper-b9f30-strict-Operator-CO-Transfer-Google-Chrome/video.webm: WebM
+all-artifacts/Full-Video-Inspection ScoreCard Tests Group 10/test_execution.mp4: ISO Media, MP4 Base Media v1 [ISO 14496-12:2003]
+all-artifacts/Monocart-Restrict Operator Tests Group 6/index.html: HTML document, ASCII text, with very long lines (55713)
+all-artifacts/Monocart-Restrict Operator Tests Group 6/attachments/e1f3517332914d077cfb1d688b937144483fa58e.webm: WebM
+all-artifacts/Monocart-Restrict Operator Tests Group 6/index.json: ASCII text, with very long lines (14651)
+===== END DEBUG =====
 
 
-*******************************************************************************
+*Merge Monocart reports using monocart-reporter
 
-import { merge } from 'monocart-reporter';
-import { globSync } from 'glob';
-import fs from 'fs';
-
-const run = async () => {
-  try {
-    const files = globSync('../all-artifacts/**/Monocart-*/index.json');
-
-    console.log(`🧩 Found ${files.length} report(s) to merge`);
-    console.log('🔍 Matching files:');
-    files.forEach(f => console.log(' → ' + f));
-
-    if (files.length === 0) {
-      throw new Error('No valid Monocart report files found.');
-    }
-
-    await merge({
-      files,
-      output: '../merged-report'
-    });
-
-    console.log('✅ Merged report created at ../merged-report');
-  } catch (error) {
-    console.error('❌ Merge failed:', error);
-    process.exit(1);
-  }
-};
-
-run();
+Run node merge-monocart.mjs
+Found 2 report(s) to merge
+Matching files:
+ → ../all-artifacts/Monocart-Restrict Operator Tests Group 6/index.json
+ → ../all-artifacts/Monocart-Inspection ScoreCard Tests Group 10/index.json
+[MR] merging report data ...
+[MR] invalid report data list: [object Object]
+Merged report created at ../merged-report
