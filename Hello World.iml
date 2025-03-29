@@ -1,27 +1,22 @@
-merge-reports:
-  needs: aggregate  # ✅ Changed: use artifact from aggregate job
-  runs-on: ubuntu-latest-16-core-internal
-  steps:
-    - name: Checkout repo
-      uses: actions/checkout@v4
 
-    # ✅ Download zipped Final-Report.zip from aggregate job
+    # ✅ Download Final-Report.zip created by the aggregate job
     - name: Download Final Combined Artifact Zip
       uses: actions/download-artifact@v4
       with:
         name: Final-Combined-Report
         path: extracted
 
-    # ✅ Unzip Final-Report.zip directly into root (avoids nested folders)
+    # ✅ Unzip the artifact into the working directory (flatten folder structure)
     - name: Unzip combined report
       run: |
         unzip -q extracted/Final-Report.zip -d .
 
-    # ✅ Confirm extracted structure before merging
-    - name: Debug: List contents of all-artifacts
+    # ✅ Debug: Show all files and their types inside all-artifacts
+    - name: Full Tree Dump (Debug)
       run: |
-        echo "Listing contents of unzipped all-artifacts:"
-        find all-artifacts
+        echo "===== BEGIN DEBUG: file list & types ====="
+        find all-artifacts -type f -exec file {} \;
+        echo "===== END DEBUG ====="
 
     - name: Cache npm dependencies
       uses: actions/cache@v3
@@ -36,11 +31,12 @@ merge-reports:
       run: npm ci
       working-directory: ./Playwright-Automation
 
-    # ✅ Merge Monocart reports using updated script (glob handles nested folders)
+    # ✅ Merge Monocart reports with debug printout of file paths
     - name: Merge Monocart reports using monocart-reporter
       run: node merge-monocart.mjs
       working-directory: ./Playwright-Automation
 
+    # ✅ List final merged report folder to verify success
     - name: Debug: List merged report directory
       run: |
         echo "Checking contents of merged-report:"
@@ -53,19 +49,20 @@ merge-reports:
         path: merged-report
 
 
-
-*****************************************************************************************
-
+*******************************************************************************
 
 import { merge } from 'monocart-reporter';
 import { globSync } from 'glob';
+import fs from 'fs';
 
 const run = async () => {
   try {
-    // ✅ Handles any level of nesting for Monocart-*/index.json
     const files = globSync('../all-artifacts/**/Monocart-*/index.json');
 
     console.log(`🧩 Found ${files.length} report(s) to merge`);
+    console.log('🔍 Matching files:');
+    files.forEach(f => console.log(' → ' + f));
+
     if (files.length === 0) {
       throw new Error('No valid Monocart report files found.');
     }
@@ -83,5 +80,3 @@ const run = async () => {
 };
 
 run();
-
-    
