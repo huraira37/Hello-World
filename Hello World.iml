@@ -1,25 +1,19 @@
-import { merge } from 'monocart-reporter';
-import { globSync } from 'glob';
 
-const run = async () => {
-  try {
-    const files = globSync('../all-artifacts/Monocart-*/index.json');
 
-    if (files.length === 0) {
-      console.error('❌ No index.json files found in Monocart-* folders.');
-      process.exit(1);
-    }
+* 'Debug: List merged report directory'
 
-    await merge({
-      files,
-      output: '../merged-report'
-    });
+Run echo "Checking contents of merged-report:"
+Checking contents of merged-report:
+ls: cannot access 'merged-report': No such file or directory
+merged-report folder not found
 
-    console.log('✅ Monocart report merged successfully.');
-  } catch (error) {
-    console.error('❌ Error merging Monocart reports:', error);
-    process.exit(1);
-  }
-};
 
-run();
+* Upload merged report
+
+Run actions/upload-artifact@v4
+Warning: No files were found with the provided path: merged-report. No artifacts will be uploaded.
+
+
+* So I'm getting above error. 
+
+Please can you read carefully and solve the issue. and highlight where you will update in yaml
