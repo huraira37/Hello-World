@@ -1,40 +1,37 @@
-please solve it. I shared all required execution result: 
+steps: 
+    - name: Checkout repo
+      uses: actions/checkout@v4
 
+    - name: Download all raw result artifacts
+      uses: actions/download-artifact@v4
+      with:
+        path: raw-collection
 
-* 'Debug: List raw JSON files'
-Run echo "Verifying downloaded report.json files:"
-  echo "Verifying downloaded report.json files:"
-  find raw-collection -name report.json
-  shell: /usr/bin/bash -e {0}
-Verifying downloaded report.json files:
-raw-collection/Raw-Results-Restrict Operator Tests Group 6/report.json
-raw-collection/Raw-Results-Inspection ScoreCard Tests Group 10/report.json
+    - name: Debug: List raw JSON files
+      run: |
+        echo "🔍 Verifying downloaded report.json files:"
+        find raw-collection -name report.json
 
+    - name: Set npm registry to Cloudflare mirror
+      run: npm config set registry https://registry.npmmirror.com/
 
-* Merge Monocart reports using monocart-reporter
-Run node merge-monocart.mjs
-Found 2 raw JSON files to merge
- → ../raw-collection/Raw-Results-Restrict Operator Tests Group 6/report.json
- → ../raw-collection/Raw-Results-Inspection ScoreCard Tests Group 10/report.json
-[MR] merging report data ...
-[MR] invalid report data list: [object Object]
-Merged results written to ../merged-results.json
+    - name: Install dependencies
+      run: npm ci
+      working-directory: ./Playwright-Automation
 
+    # ✅ Merge raw JSONs into one
+    - name: Merge Monocart reports using monocart-reporter
+      run: node merge-monocart.mjs
+      working-directory: ./Playwright-Automation
 
-* 'Debug: List merged report directory'
-Run echo "Checking contents of merged-report:"
-Checking contents of merged-report:
-ls: cannot access 'merged-report': No such file or directory
-merged-report folder not found
+    # ✅ Generate HTML from merged JSON
+    - name: Generate final Monocart HTML report
+      run: |
+        npx monocart-reporter generate ../merged-results.json --output merged-report
+      working-directory: ./Playwright-Automation
 
-
-* pload merged report
-Run actions/upload-artifact@v4
-  with:
-    name: merged-report
-    path: merged-report
-    if-no-files-found: warn
-    compression-level: 6
-    overwrite: false
-    include-hidden-files: false
-Warning: No files were found with the provided path: merged-report. No artifacts will be uploaded.
+    - name: Upload merged report
+      uses: actions/upload-artifact@v4
+      with:
+        name: merged-report
+        path: Playwright-Automation/merged-report
