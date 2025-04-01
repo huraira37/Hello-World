@@ -1,84 +1,64 @@
-DISPLAY=:99 npx playwright test ${{ matrix.group.file }} \
-  --project="Google Chrome" \
-  --workers=1 \
-  --headed \
-  --reporter=list,json:./test-results/report.json \
-  2>&1 | tee test_output.txt || EXIT_CODE=$?
+please solve it. I shared all debug output result: 
 
 
 
-- name: Upload raw test result JSON
-  if: always()
-  uses: actions/upload-artifact@v4
-  with:
-    name: Raw-Results-${{ matrix.group.name }}
-    path: ./Playwright-Automation/test-results/report.json
 
-
-
-import { merge, generate } from 'monocart-reporter';
-import { globSync } from 'glob';
-
-const run = async () => {
-  const files = globSync('../raw-collection/**/report.json');
-  console.log(`Found ${files.length} raw JSON files to merge`);
-  files.forEach(f => console.log(' → ' + f));
-
-  if (!files.length) {
-    console.error('❌ No raw JSON files found to merge!');
-    process.exit(1);
-  }
-
-  const mergedJson = './merged-results.json';
-  const outputHtml = './merged-report/index.html';
-
-  await merge({
-    files,
-    output: mergedJson
-  });
-
-  console.log(`✅ Merged data saved to ${mergedJson}`);
-
-  await generate({
-    resultFile: mergedJson,
-    outputFile: outputHtml
-  });
-
-  console.log(`✅ Monocart report generated at ${outputHtml}`);
-};
-
-run();
-
-
-
- steps:
-    - name: Checkout repo
-      uses: actions/checkout@v4
-
-    - name: Download raw JSON reports
-      uses: actions/download-artifact@v4
-      with:
-        path: raw-collection
-
-    - name: Debug: Confirm report.json files exist
-      run: |
-        echo "Raw JSON files:"
-        find raw-collection -name report.json
-
-    - name: Set npm registry to avoid E503
-      run: npm config set registry https://registry.npmmirror.com/
-
-    - name: Install dependencies
-      run: npm ci
-      working-directory: ./Playwright-Automation
-
-    - name: Merge + Generate HTML report
-      run: node merge-monocart.mjs
-      working-directory: ./Playwright-Automation
-
-    - name: Upload merged HTML report
-      uses: actions/upload-artifact@v4
-      with:
-        name: merged-report
-        path: Playwright-Automation/merged-report
-
+* Run Playwright Tests
+1s
+Run # Ensure pipefail is set so the exit status of the first command in a pipeline is used.
+  # Ensure pipefail is set so the exit status of the first command in a pipeline is used.
+  set -o pipefail
+  EXIT_CODE=0
+  # Run the tests. If npx playwright test exist nonzero, capture its exit code.
+  DISPLAY=:99 npx playwright test Playwright-Automation/tests/cf_AutoTest/restrictedOperator/Restrict_Operator_Tests.spec.ts --project="Google Chrome" --workers=1 --headed --reporter=list,json:.test-results/report.json 2>&1 | tee test_output.txt || EXIT_CODE=$?
+  echo "Test exit code: $EXIT_CODE"
+  # Set the exit code as a workflow output
+  echo "exit-code=$EXIT_CODE" >> $GITHUB_OUTPUT
+  # Exit with the captured code (this step is marked continue-on-error so subsequent steps run)
+  exit $EXIT_CODE
+  # Check for flaky tests in the report
+     if grep -q '"status": "flaky"' report.json; then
+       echo "Flaky tests detected in Playwright-Automation/tests/cf_AutoTest/restrictedOperator/Restrict_Operator_Tests.spec.ts."
+       exit 1
+     fi
+     # Exit with the original exit code if no flaky tests were found
+     exit $exit_code
+  shell: /usr/bin/bash -e {0}
+  env:
+    CI: true
+    packageRepositoryGeneric: cbe6b8b0-d99d-4da0-9b07-f059918eda44_generic
+    PACKAGEREPOSITORYGENERIC: cbe6b8b0-d99d-4da0-9b07-f059918eda44_generic
+    secret_packageRegistryToken: ***
+    SECRET__PACKAGEREGISTRYTOKEN: ***
+    secret_packageApiAccessToken: ***
+    SECRET__PACKAGEAPIACCESSTOKEN: ***
+    secret_packageRegistryUsername: ***
+    SECRET__PACKAGEREGISTRYUSERNAME: ***
+    packageRegistryUrl: https://packages.lmig.com
+    PACKAGEREGISTRYURL: https://packages.lmig.com
+    packageRegistryHostname: packages.lmig.com
+    PACKAGEREGISTRYHOSTNAME: packages.lmig.com
+    NPM_CONFIG_USERCONFIG: /home/runner/work/_temp/.npmrc
+    NODE_AUTH_TOKEN: ***
+  
+Error: Cannot find module 'json:.test-results/report.json'
+Require stack:
+- /home/runner/work/hammertime-auto-playwright-tests/hammertime-auto-playwright-tests/Playwright-Automation/node_modules/playwright/lib/program.js
+- /home/runner/work/hammertime-auto-playwright-tests/hammertime-auto-playwright-tests/Playwright-Automation/node_modules/@playwright/test/cli.js
+    at Module._resolveFilename (node:internal/modules/cjs/loader:1212:15)
+    at Function.resolve (node:internal/modules/helpers:193:19)
+    at resolveReporter (/home/runner/work/hammertime-auto-playwright-tests/hammertime-auto-playwright-tests/Playwright-Automation/node_modules/playwright/lib/program.js:333:18)
+    at /home/runner/work/hammertime-auto-playwright-tests/hammertime-auto-playwright-tests/Playwright-Automation/node_modules/playwright/lib/program.js:327:40
+    at Array.map (<anonymous>)
+    at resolveReporterOption (/home/runner/work/hammertime-auto-playwright-tests/hammertime-auto-playwright-tests/Playwright-Automation/node_modules/playwright/lib/program.js:327:30)
+    at overridesFromOptions (/home/runner/work/hammertime-auto-playwright-tests/hammertime-auto-playwright-tests/Playwright-Automation/node_modules/playwright/lib/program.js:287:15)
+    at runTests (/home/runner/work/hammertime-auto-playwright-tests/hammertime-auto-playwright-tests/Playwright-Automation/node_modules/playwright/lib/program.js:167:24)
+    at async t.<anonymous> (/home/runner/work/hammertime-auto-playwright-tests/hammertime-auto-playwright-tests/Playwright-Automation/node_modules/playwright/lib/program.js:55:7) {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [
+    '/home/runner/work/hammertime-auto-playwright-tests/hammertime-auto-playwright-tests/Playwright-Automation/node_modules/playwright/lib/program.js',
+    '/home/runner/work/hammertime-auto-playwright-tests/hammertime-auto-playwright-tests/Playwright-Automation/node_modules/@playwright/test/cli.js'
+  ]
+}
+Test exit code: 1
+Error: Process completed with exit code 1.
