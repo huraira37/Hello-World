@@ -1,26 +1,95 @@
-- name: Run Playwright Tests
-  id: run_tests
-  run: |
-    set -o pipefail
-    EXIT_CODE=0
-    DISPLAY=:99 npx playwright test ${{ matrix.group.file }} --project="Google Chrome" --workers=1 --headed --reporter=json 2>&1 | tee test_output.txt || EXIT_CODE=$?
-    echo "Test exit code: $EXIT_CODE"
-    echo "exit-code=$EXIT_CODE" >> $GITHUB_OUTPUT
-    exit $EXIT_CODE
-  working-directory: ./Playwright-Automation
-  continue-on-error: true
+getting worst and worst
 
+now it's getting error in my jobs:
 
+* Upload Screenshots
 
-
-- name: Upload raw test result JSON
-  if: always()
-  uses: actions/upload-artifact@v4
+Run actions/upload-artifact@v4
   with:
-    name: Raw-Results-${{ matrix.group.name }}
+    name: Screenshots-Restrict Operator Tests Group 6
+    path: ./Playwright-Automation/test-results/**/*.png
+    retention-days: 1
+    if-no-files-found: warn
+    compression-level: 6
+    overwrite: false
+    include-hidden-files: false
+  env:
+    CI: true
+    packageRepositoryGeneric: cbe6b8b0-d99d-4da0-9b07-f059918eda44_generic
+    PACKAGEREPOSITORYGENERIC: cbe6b8b0-d99d-4da0-9b07-f059918eda44_generic
+    secret_packageRegistryToken: ***
+    SECRET__PACKAGEREGISTRYTOKEN: ***
+    secret_packageApiAccessToken: ***
+    SECRET__PACKAGEAPIACCESSTOKEN: ***
+    secret_packageRegistryUsername: ***
+    SECRET__PACKAGEREGISTRYUSERNAME: ***
+    packageRegistryUrl: https://packages.lmig.com
+    PACKAGEREGISTRYURL: https://packages.lmig.com
+    packageRegistryHostname: packages.lmig.com
+    PACKAGEREGISTRYHOSTNAME: packages.lmig.com
+    NPM_CONFIG_USERCONFIG: /home/runner/work/_temp/.npmrc
+    NODE_AUTH_TOKEN: ***
+Warning: No files were found with the provided path: ./Playwright-Automation/test-results/**/*.png. No artifacts will be uploaded.
+
+
+* Upload raw test result JSON
+
+Run actions/upload-artifact@v4
+  with:
+    name: Raw-Results-Restrict Operator Tests Group 6
     path: ./Playwright-Automation/test-results/report.json
     retention-days: 3
+    if-no-files-found: warn
+    compression-level: 6
+    overwrite: false
+    include-hidden-files: false
+  env:
+    CI: true
+    packageRepositoryGeneric: cbe6b8b0-d99d-4da0-9b07-f059918eda44_generic
+    PACKAGEREPOSITORYGENERIC: cbe6b8b0-d99d-4da0-9b07-f059918eda44_generic
+    secret_packageRegistryToken: ***
+    SECRET__PACKAGEREGISTRYTOKEN: ***
+    secret_packageApiAccessToken: ***
+    SECRET__PACKAGEAPIACCESSTOKEN: ***
+    secret_packageRegistryUsername: ***
+    SECRET__PACKAGEREGISTRYUSERNAME: ***
+    packageRegistryUrl: https://packages.lmig.com
+    PACKAGEREGISTRYURL: https://packages.lmig.com
+    packageRegistryHostname: packages.lmig.com
+    PACKAGEREGISTRYHOSTNAME: packages.lmig.com
+    NPM_CONFIG_USERCONFIG: /home/runner/work/_temp/.npmrc
+    NODE_AUTH_TOKEN: ***
+Warning: No files were found with the provided path: ./Playwright-Automation/test-results/report.json. No artifacts will be uploaded.
 
 
+* Upload Monocart report
 
-const files = globSync('../raw-collection/**/report.json');
+Run actions/upload-artifact@v4
+  with:
+    name: Monocart-Restrict Operator Tests Group 6
+    path: ./Playwright-Automation/monocart-report
+    retention-days: 15
+    if-no-files-found: warn
+    compression-level: 6
+    overwrite: false
+    include-hidden-files: false
+  env:
+    CI: true
+    packageRepositoryGeneric: cbe6b8b0-d99d-4da0-9b07-f059918eda44_generic
+    PACKAGEREPOSITORYGENERIC: cbe6b8b0-d99d-4da0-9b07-f059918eda44_generic
+    secret_packageRegistryToken: ***
+    SECRET__PACKAGEREGISTRYTOKEN: ***
+    secret_packageApiAccessToken: ***
+    SECRET__PACKAGEAPIACCESSTOKEN: ***
+    secret_packageRegistryUsername: ***
+    SECRET__PACKAGEREGISTRYUSERNAME: ***
+    packageRegistryUrl: https://packages.lmig.com
+    PACKAGEREGISTRYURL: https://packages.lmig.com
+    packageRegistryHostname: packages.lmig.com
+    PACKAGEREGISTRYHOSTNAME: packages.lmig.com
+    NPM_CONFIG_USERCONFIG: /home/runner/work/_temp/.npmrc
+    NODE_AUTH_TOKEN: ***
+Warning: No files were found with the provided path: ./Playwright-Automation/monocart-report. No artifacts will be uploaded.
+
+
+Please solve everything
