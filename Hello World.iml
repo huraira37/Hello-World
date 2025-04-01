@@ -1,28 +1,5 @@
-here are your expected result:
-
-* 'Debug: List downloaded raw JSON files'
-
-Run echo "Showing structure of raw-collection/"
-Showing structure of raw-collection/
-raw-collection/Raw-Results-Restrict Operator Tests Group 6/cf_AutoTest-restrictedOper-b9f30-strict-Operator-CO-Transfer-Google-Chrome/video.webm
-raw-collection/Raw-Results-Inspection ScoreCard Tests Group 10/cf_PropertyTest-inspection-f1fe4-ONST-NO-INSP-pop-up-at-Bind-Google-Chrome/video.webm
-raw-collection/Full-Video-Restrict Operator Tests Group 6/test_execution.mp4
-raw-collection/Full-Video-Inspection ScoreCard Tests Group 10/test_execution.mp4
-
-* 'Debug: Show all raw JSON files'
-
-Run echo "Showing raw JSON files:"
-  echo "Showing raw JSON files:"
-  find raw-collection -type f -name "*.json"
-  shell: /usr/bin/bash -e {0}
-Showing raw JSON files:
+DISPLAY=:99 npx playwright test ${{ matrix.group.file }} --project="Google Chrome" --workers=1 --headed --reporter=json:./raw-results/results.json
 
 
-* Merge raw JSON results using monocart-reporter API
 
-Run node merge-json.mjs
-Found 0 raw JSON files to merge
-No JSON files found to merge!
-Error: Process completed with exit code 1.
-
-please solve the issue, it's so much frustrating!
+const files = globSync('../raw-collection/**/results.json');
