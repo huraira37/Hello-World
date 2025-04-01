@@ -1,45 +1,28 @@
-  merge-reports:
-    needs: test
-    runs-on: ubuntu-latest-16-core-internal
-    steps:
-      - name: Checkout repo
-        uses: actions/checkout@v4
+here are your expected result:
 
-      - name: Download all raw test results
-        uses: actions/download-artifact@v4
-        with:
-          path: raw-collection
+* 'Debug: List downloaded raw JSON files'
 
-      - name: Debug: List downloaded raw JSON files
-        run: |
-          echo "🗂 Showing structure of raw-collection/"
-          find raw-collection -type f
+Run echo "Showing structure of raw-collection/"
+Showing structure of raw-collection/
+raw-collection/Raw-Results-Restrict Operator Tests Group 6/cf_AutoTest-restrictedOper-b9f30-strict-Operator-CO-Transfer-Google-Chrome/video.webm
+raw-collection/Raw-Results-Inspection ScoreCard Tests Group 10/cf_PropertyTest-inspection-f1fe4-ONST-NO-INSP-pop-up-at-Bind-Google-Chrome/video.webm
+raw-collection/Full-Video-Restrict Operator Tests Group 6/test_execution.mp4
+raw-collection/Full-Video-Inspection ScoreCard Tests Group 10/test_execution.mp4
 
-      # ✅ INSERT THIS DEBUG STEP RIGHT HERE
-      - name: Debug: Show all raw JSON files
-        run: |
-          echo "🧪 Showing raw JSON files:"
-          find raw-collection -type f -name "*.json"
+* 'Debug: Show all raw JSON files'
 
-      - name: Set npm registry to Cloudflare mirror (avoid E503)
-        run: npm config set registry https://registry.npmmirror.com/
+Run echo "Showing raw JSON files:"
+  echo "Showing raw JSON files:"
+  find raw-collection -type f -name "*.json"
+  shell: /usr/bin/bash -e {0}
+Showing raw JSON files:
 
-      - name: Install dependencies
-        run: npm ci
-        working-directory: ./Playwright-Automation
 
-      - name: Merge raw JSON results using monocart-reporter API
-        run: node merge-json.mjs
-        working-directory: ./Playwright-Automation
+* Merge raw JSON results using monocart-reporter API
 
-      - name: Generate final Monocart report
-        run: |
-          npx monocart-reporter generate merged-results.json --output merged-report
-        working-directory: ./Playwright-Automation
+Run node merge-json.mjs
+Found 0 raw JSON files to merge
+No JSON files found to merge!
+Error: Process completed with exit code 1.
 
-      - name: Upload merged Monocart report
-        uses: actions/upload-artifact@v4
-        with:
-          name: merged-report
-          path: Playwright-Automation/merged-report
-
+please solve the issue, it's so much frustrating!
