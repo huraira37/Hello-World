@@ -1,33 +1,39 @@
-import { merge } from 'monocart-reporter';
+import fs from 'fs';
+import path from 'path';
 import { globSync } from 'glob';
 
-const run = async () => {
+const files = globSync('../all-artifacts/Monocart-*/index.json');
+
+console.log(`🧪 Found ${files.length} Monocart index.json file(s)`);
+
+for (const file of files) {
+  console.log('\n========================');
+  console.log('🔍 Inspecting:', file);
+
   try {
-    // ✅ Match the entire report directories instead of index.json files
-    const folders = globSync('../all-artifacts/Monocart-*');
+    const content = JSON.parse(fs.readFileSync(file, 'utf-8'));
 
-    console.log(`🧩 Found ${folders.length} report folder(s) to merge`);
-    folders.forEach(f => console.log(' → ' + f));
-
-    if (folders.length === 0) {
-      throw new Error('No Monocart report folders found.');
+    if (Array.isArray(content)) {
+      console.log('📄 JSON is an array with length:', content.length);
+    } else if (typeof content === 'object') {
+      console.log('📄 JSON is an object with keys:', Object.keys(content));
+    } else {
+      console.log('⚠️ JSON is not valid or unexpected structure.');
     }
 
-    await merge({
-      entries: folders,
-      output: '../merged-report'
-    });
-
-    console.log('✅ Merged report created at ../merged-report');
-  } catch (error) {
-    console.error('❌ Merge failed:', error);
-    process.exit(1);
+  } catch (e) {
+    console.log('❌ Failed to parse JSON:', e.message);
   }
-};
-
-run();
+}
 
 
+***********************************************************************************
 
-***************************************************************************
+    # ✅ Debug: Inspect the JSON structure inside Monocart reports
+    - name: Debug: Inspect JSON file structure
+      run: node debug-json.mjs
+      working-directory: ./Playwright-Automation
 
+    - name: Merge Monocart reports using monocart-reporter
+      run: node merge-monocart.mjs
+      working-directory: ./Playwright-Automation
