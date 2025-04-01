@@ -1,18 +1,31 @@
-getting this error:
+import { merge } from 'monocart-reporter';
+import { globSync } from 'glob';
 
-* Merge raw JSON results using monocart-reporter API
+const run = async () => {
+  const files = globSync('../raw-collection/**/index.json');
 
-Run node merge-json.mjs
-node:internal/modules/cjs/loader:1143
-  throw err;
-  ^
-Error: Cannot find module '/home/runner/work/hammertime-auto-playwright-tests/hammertime-auto-playwright-tests/Playwright-Automation/merge-json.mjs'
-    at Module._resolveFilename (node:internal/modules/cjs/loader:1140:15)
-    at Module._load (node:internal/modules/cjs/loader:981:27)
-    at Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:128:12)
-    at node:internal/main/run_main_module:28:49 {
-  code: 'MODULE_NOT_FOUND',
-  requireStack: []
-}
-Node.js v18.20.7
-Error: Process completed with exit code 1.
+  console.log(`🧩 Found ${files.length} raw JSON files to merge`);
+  files.forEach(f => console.log(' → ' + f));
+
+  if (!files.length) {
+    console.error('❌ No JSON files found to merge!');
+    process.exit(1);
+  }
+
+  const outputPath = '../merged-results.json';
+
+  try {
+    await merge({
+      files,
+      output: outputPath
+    });
+
+    console.log(`✅ Merged file created: ${outputPath}`);
+  } catch (err) {
+    console.error('❌ Merge failed:', err);
+    process.exit(1);
+  }
+};
+
+run();
+
