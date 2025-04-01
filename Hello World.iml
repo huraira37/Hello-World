@@ -1,31 +1,9 @@
-import { merge } from 'monocart-reporter';
-import { globSync } from 'glob';
+getting this error:
 
-const run = async () => {
-  const files = globSync('../raw-collection/**/index.json');
+* Merge raw JSON results using monocart-reporter API
 
-  console.log(`🧩 Found ${files.length} raw JSON files to merge`);
-  files.forEach(f => console.log(' → ' + f));
-
-  if (!files.length) {
-    console.error('❌ No JSON files found to merge!');
-    process.exit(1);
-  }
-
-  const outputPath = '../merged-results.json';
-
-  try {
-    await merge({
-      files,
-      output: outputPath
-    });
-
-    console.log(`✅ Merged file created: ${outputPath}`);
-  } catch (err) {
-    console.error('❌ Merge failed:', err);
-    process.exit(1);
-  }
-};
-
-run();
-
+Run node merge-json.mjs
+  
+Found 0 raw JSON files to merge
+No JSON files found to merge!
+Error: Process completed with exit code 1.
