@@ -1,6 +1,42 @@
-DISPLAY=:99 npx playwright test ${{ matrix.group.file }} \
-  --project="Google Chrome" \
-  --workers=1 \
-  --headed \
-  --reporter=json:test-results/report.json \
-  2>&1 | tee test_output.txt || EXIT_CODE=$?
+- name: Upload raw test result JSON
+  if: always()
+  uses: actions/upload-artifact@v4
+  with:
+    name: Raw-Results-${{ matrix.group.name }}
+    path: ./Playwright-Automation/test-results/report.json
+    retention-days: 3
+
+
+
+steps: 
+    - name: Checkout repo
+      uses: actions/checkout@v4
+
+    - name: Download all raw result artifacts
+      uses: actions/download-artifact@v4
+      with:
+        path: raw-collection
+
+    - name: Debug: List raw JSON files
+      run: |
+        echo "🔍 Verifying downloaded test-results/report.json files:"
+        find raw-collection -name report.json
+
+    - name: Set npm registry to Cloudflare mirror
+      run: npm config set registry https://registry.npmmirror.com/
+
+    - name: Install dependencies
+      run: npm ci
+      working-directory: ./Playwright-Automation
+
+    # ✅ CLI-based merging and HTML generation using monocart
+    - name: Merge all reports & generate final HTML
+      run: |
+        npx monocart merge ../raw-collection/**/report.json -o ./merged-report/index.html
+      working-directory: ./Playwright-Automation
+
+    - name: Upload merged Monocart report
+      uses: actions/upload-artifact@v4
+      with:
+        name: merged-report
+        path: Playwright-Automation/merged-report
