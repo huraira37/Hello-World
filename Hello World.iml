@@ -1,82 +1,30 @@
-steps: 
-    - name: Checkout repo
-      uses: actions/checkout@v4
-
-    - name: Download all raw result artifacts
-      uses: actions/download-artifact@v4
-      with:
-        path: raw-collection
-
-    - name: Debug: List raw JSON files
-      run: |
-        echo "🔍 Verifying downloaded test-results/report.json files:"
-        find raw-collection -name report.json
-
-    - name: Set npm registry to Cloudflare mirror
-      run: npm config set registry https://registry.npmmirror.com/
-
-    - name: Install dependencies
-      run: npm ci
-      working-directory: ./Playwright-Automation
-
-    # ✅ Merge the raw Playwright JSON files (not Monocart report JSONs)
-    - name: Merge raw test results
-      run: node merge-monocart.mjs
-      working-directory: ./Playwright-Automation
-
-    # ✅ Generate Monocart HTML report using correct Node API
-    - name: Generate final Monocart HTML report
-      run: node generate-report.mjs
-      working-directory: ./Playwright-Automation
-
-    - name: Upload merged report
-      uses: actions/upload-artifact@v4
-      with:
-        name: merged-report
-        path: Playwright-Automation/merged-report
-
-
-
-import { merge } from 'monocart-reporter';
-import { globSync } from 'glob';
-
-const run = async () => {
-  const files = globSync('../raw-collection/**/report.json');
-  console.log(`Found ${files.length} raw JSON files to merge`);
-  files.forEach(f => console.log(' → ' + f));
-
-  if (!files.length) {
-    console.error('No JSON files found to merge!');
-    process.exit(1);
-  }
-
-  await merge({
-    files,
-    output: '../merged-results.json'
-  });
-
-  console.log('✅ Merged results written to ../merged-results.json');
-};
-
-run();
+please solve it. I shared all debug output result: 
 
 
 
 
+* Merge raw test results
+Run node merge-monocart.mjs
+Found 2 raw JSON files to merge
+ → ../raw-collection/Raw-Results-Restrict Operator Tests Group 6/report.json
+ → ../raw-collection/Raw-Results-Inspection ScoreCard Tests Group 10/report.json
+[MR] merging report data ...
+[MR] invalid report data list: [object Object]
+Merged results written to ../merged-results.json
 
+
+
+* Generate final Monocart HTML report
+Run node generate-report.mjs
+file:///home/runner/work/hammertime-auto-playwright-tests/hammertime-auto-playwright-tests/Playwright-Automation/generate-report.mjs:1
 import { generate } from 'monocart-reporter';
+         ^^^^^^^^
+SyntaxError: The requested module 'monocart-reporter' does not provide an export named 'generate'
+    at ModuleJob._instantiate (node:internal/modules/esm/module_job:123:21)
+    at async ModuleJob.run (node:internal/modules/esm/module_job:191:5)
+    at async ModuleLoader.import (node:internal/modules/esm/loader:337:24)
+    at async loadESM (node:internal/process/esm_loader:34:7)
+    at async handleMainPromise (node:internal/modules/run_main:106:12)
 
-const run = async () => {
-  try {
-    await generate({
-      resultFile: '../merged-results.json',
-      outputFile: './merged-report/index.html'
-    });
-    console.log('✅ Merged HTML report generated at ./merged-report/index.html');
-  } catch (err) {
-    console.error('❌ Failed to generate HTML report:', err);
-    process.exit(1);
-  }
-};
-
-run();
+Node.js v18.20.7
+Error: Process completed with exit code 1.
