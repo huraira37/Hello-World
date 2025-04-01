@@ -1,66 +1,30 @@
-Still has a issue:
-I'm sharing all steps details:
+import { merge } from 'monocart-reporter';
+import { globSync } from 'glob';
+import path from 'path';
 
-* Debug: Inspect JSON file structure
-Run node debug-json.mjs
-Found 2 Monocart index.json file(s)
+const run = async () => {
+  try {
+    // ✅ Find only valid index.json files from report folders
+    const files = globSync('../all-artifacts/Monocart-*/index.json');
 
-========================
-Inspecting: ../all-artifacts/Monocart-Restrict Operator Tests Group 6/index.json
-JSON is an object with keys: [
-  'name',           'logo',
-  'date',           'dateH',
-  'duration',       'durationH',
-  'cwd',            'outputFile',
-  'outputDir',      'metadata',
-  'system',         'artifacts',
-  'trends',         'columns',
-  'rows',           'formatters',
-  'suiteTypes',     'caseTypes',
-  'traceViewerUrl', 'mermaid',
-  'groupOptions',   'tags',
-  'summary',        'pieChart',
-  'htmlPath'
-]
+    console.log(`🧩 Found ${files.length} Monocart index.json file(s)`);
+    files.forEach(file => console.log(' → ' + file));
 
-========================
-Inspecting: ../all-artifacts/Monocart-Inspection ScoreCard Tests Group 10/index.json
-JSON is an object with keys: [
-  'name',           'logo',
-  'date',           'dateH',
-  'duration',       'durationH',
-  'cwd',            'outputFile',
-  'outputDir',      'metadata',
-  'system',         'artifacts',
-  'trends',         'columns',
-  'rows',           'formatters',
-  'suiteTypes',     'caseTypes',
-  'traceViewerUrl', 'mermaid',
-  'groupOptions',   'tags',
-  'summary',        'pieChart',
-  'htmlPath'
-]
+    if (files.length === 0) {
+      throw new Error('No valid index.json files found to merge.');
+    }
 
+    // ✅ Merge these JSON files into one
+    await merge({
+      files,
+      output: '../merged-report'
+    });
 
-* Merge Monocart reports using monocart-reporter
-Run node merge-monocart.mjs
-Found 2 report folder(s) to merge
- → ../all-artifacts/Monocart-Restrict Operator Tests Group 6
- → ../all-artifacts/Monocart-Inspection ScoreCard Tests Group 10
-[MR] merging report data ...
-[MR] invalid report data list: [object Object]
-Merged report created at ../merged-report
+    console.log('✅ Merged Monocart report created at ../merged-report');
+  } catch (error) {
+    console.error('❌ Failed to merge Monocart reports:', error.message);
+    process.exit(1);
+  }
+};
 
-
-* 'Debug: List merged report directory'
-
-Run echo "Checking contents of merged-report:"
-Checking contents of merged-report:
-ls: cannot access 'merged-report': No such file or directory
-merged-report folder not found
-
-* Upload merged report
-Run actions/upload-artifact@v4
-Warning: No files were found with the provided path: merged-report. No artifacts will be uploaded.
-
-please solve the issue, and highlight where you will update in yaml?
+run();
