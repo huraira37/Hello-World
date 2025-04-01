@@ -1,9 +1,45 @@
-getting this error:
+  merge-reports:
+    needs: test
+    runs-on: ubuntu-latest-16-core-internal
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
 
-* Merge raw JSON results using monocart-reporter API
+      - name: Download all raw test results
+        uses: actions/download-artifact@v4
+        with:
+          path: raw-collection
 
-Run node merge-json.mjs
-  
-Found 0 raw JSON files to merge
-No JSON files found to merge!
-Error: Process completed with exit code 1.
+      - name: Debug: List downloaded raw JSON files
+        run: |
+          echo "🗂 Showing structure of raw-collection/"
+          find raw-collection -type f
+
+      # ✅ INSERT THIS DEBUG STEP RIGHT HERE
+      - name: Debug: Show all raw JSON files
+        run: |
+          echo "🧪 Showing raw JSON files:"
+          find raw-collection -type f -name "*.json"
+
+      - name: Set npm registry to Cloudflare mirror (avoid E503)
+        run: npm config set registry https://registry.npmmirror.com/
+
+      - name: Install dependencies
+        run: npm ci
+        working-directory: ./Playwright-Automation
+
+      - name: Merge raw JSON results using monocart-reporter API
+        run: node merge-json.mjs
+        working-directory: ./Playwright-Automation
+
+      - name: Generate final Monocart report
+        run: |
+          npx monocart-reporter generate merged-results.json --output merged-report
+        working-directory: ./Playwright-Automation
+
+      - name: Upload merged Monocart report
+        uses: actions/upload-artifact@v4
+        with:
+          name: merged-report
+          path: Playwright-Automation/merged-report
+
