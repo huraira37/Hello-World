@@ -1,30 +1,9 @@
-import { merge } from 'monocart-reporter';
-import { globSync } from 'glob';
-import path from 'path';
+getting this:
 
-const run = async () => {
-  try {
-    // ✅ Find only valid index.json files from report folders
-    const files = globSync('../all-artifacts/Monocart-*/index.json');
-
-    console.log(`🧩 Found ${files.length} Monocart index.json file(s)`);
-    files.forEach(file => console.log(' → ' + file));
-
-    if (files.length === 0) {
-      throw new Error('No valid index.json files found to merge.');
-    }
-
-    // ✅ Merge these JSON files into one
-    await merge({
-      files,
-      output: '../merged-report'
-    });
-
-    console.log('✅ Merged Monocart report created at ../merged-report');
-  } catch (error) {
-    console.error('❌ Failed to merge Monocart reports:', error.message);
-    process.exit(1);
-  }
-};
-
-run();
+Run node merge-monocart.mjs
+Found 2 Monocart index.json file(s)
+ → ../all-artifacts/Monocart-Restrict Operator Tests Group 6/index.json
+ → ../all-artifacts/Monocart-Inspection ScoreCard Tests Group 10/index.json
+[MR] merging report data ...
+[MR] invalid report data list: [object Object]
+Merged Monocart report created at ../merged-report
