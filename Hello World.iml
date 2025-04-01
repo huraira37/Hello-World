@@ -50,3 +50,13 @@ run();
     path: ./Playwright-Automation/test-results/report.json
     retention-days: 3
 
+
+
+    DISPLAY=:99 npx playwright test ${{ matrix.group.file }} --project="Google Chrome" --workers=1 --headed --reporter=json 2>&1 | tee test_output.txt || EXIT_CODE=$?
+
+
+ ['json', { outputFile: 'test-results/report.json' }]
+
+
+
+
