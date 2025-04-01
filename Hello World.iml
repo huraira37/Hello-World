@@ -1,8 +1,52 @@
-getting this error:
+import { merge } from 'monocart-reporter';
+import { globSync } from 'glob';
 
-* Merge Monocart reports using monocart-reporter
+const run = async () => {
+  const files = globSync('../raw-collection/**/report.json');
 
-Run node merge-monocart.mjs
-Found 0 raw JSON files to merge
-No JSON files found to merge!
-Error: Process completed with exit code 1.
+  console.log(`Found ${files.length} raw JSON files to merge`);
+  files.forEach(f => console.log(' → ' + f));
+
+  if (!files.length) {
+    console.error('No JSON files found to merge!');
+    process.exit(1);
+  }
+
+  await merge({
+    files,
+    output: '../merged-results.json'
+  });
+
+  console.log('✅ Merged results written to ../merged-results.json');
+};
+
+run();
+
+
+***********************************************************************
+
+- name: Install dependencies
+  run: npm ci
+  working-directory: ./Playwright-Automation
+
+# Debug step goes here
+- name: Debug: List downloaded artifacts
+  run: |
+    echo "Listing raw-collection files..."
+    find raw-collection -type f
+
+- name: Merge raw JSON results using monocart-reporter API
+  run: node merge-monocart.mjs
+  working-directory: ./Playwright-Automation
+
+
+
+
+- name: Upload raw test result JSON
+  if: always()
+  uses: actions/upload-artifact@v4
+  with:
+    name: Raw-Results-${{ matrix.group.name }}
+    path: ./Playwright-Automation/test-results/report.json
+    retention-days: 3
+
