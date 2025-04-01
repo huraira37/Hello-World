@@ -1,30 +1,6 @@
-please solve it. I shared all debug output result: 
-
-
-
-
-* Merge raw test results
-Run node merge-monocart.mjs
-Found 2 raw JSON files to merge
- → ../raw-collection/Raw-Results-Restrict Operator Tests Group 6/report.json
- → ../raw-collection/Raw-Results-Inspection ScoreCard Tests Group 10/report.json
-[MR] merging report data ...
-[MR] invalid report data list: [object Object]
-Merged results written to ../merged-results.json
-
-
-
-* Generate final Monocart HTML report
-Run node generate-report.mjs
-file:///home/runner/work/hammertime-auto-playwright-tests/hammertime-auto-playwright-tests/Playwright-Automation/generate-report.mjs:1
-import { generate } from 'monocart-reporter';
-         ^^^^^^^^
-SyntaxError: The requested module 'monocart-reporter' does not provide an export named 'generate'
-    at ModuleJob._instantiate (node:internal/modules/esm/module_job:123:21)
-    at async ModuleJob.run (node:internal/modules/esm/module_job:191:5)
-    at async ModuleLoader.import (node:internal/modules/esm/loader:337:24)
-    at async loadESM (node:internal/process/esm_loader:34:7)
-    at async handleMainPromise (node:internal/modules/run_main:106:12)
-
-Node.js v18.20.7
-Error: Process completed with exit code 1.
+DISPLAY=:99 npx playwright test ${{ matrix.group.file }} \
+  --project="Google Chrome" \
+  --workers=1 \
+  --headed \
+  --reporter=json:test-results/report.json \
+  2>&1 | tee test_output.txt || EXIT_CODE=$?
