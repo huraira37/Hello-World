@@ -1,27 +1,29 @@
-based on you suggestion when I updated the Run playwright test, getting error:  :(
+    - name: Run Playwright Tests
+      id: run_tests
+      run: |
+        set -o pipefail
+        EXIT_CODE=0
 
-* Run Playwright Test
+        # Only specify test file and other CLI options — reporter is handled in config
+        DISPLAY=:99 npx playwright test ${{ matrix.group.file }} \
+          --project="Google Chrome" \
+          --workers=1 \
+          --headed \
+          2>&1 | tee test_output.txt || EXIT_CODE=$?
 
-Run # Ensure pipefail is set so the exit status of the first command in a pipeline is used.
-Error: Cannot find module 'json=./test-results/report.json'
-Require stack:
-- /home/runner/work/hammertime-auto-playwright-tests/hammertime-auto-playwright-tests/Playwright-Automation/node_modules/playwright/lib/program.js
-- /home/runner/work/hammertime-auto-playwright-tests/hammertime-auto-playwright-tests/Playwright-Automation/node_modules/@playwright/test/cli.js
-    at Module._resolveFilename (node:internal/modules/cjs/loader:1212:15)
-    at Function.resolve (node:internal/modules/helpers:193:19)
-    at resolveReporter (/home/runner/work/hammertime-auto-playwright-tests/hammertime-auto-playwright-tests/Playwright-Automation/node_modules/playwright/lib/program.js:333:18)
-    at /home/runner/work/hammertime-auto-playwright-tests/hammertime-auto-playwright-tests/Playwright-Automation/node_modules/playwright/lib/program.js:327:40
-    at Array.map (<anonymous>)
-    at resolveReporterOption (/home/runner/work/hammertime-auto-playwright-tests/hammertime-auto-playwright-tests/Playwright-Automation/node_modules/playwright/lib/program.js:327:30)
-    at overridesFromOptions (/home/runner/work/hammertime-auto-playwright-tests/hammertime-auto-playwright-tests/Playwright-Automation/node_modules/playwright/lib/program.js:287:15)
-    at runTests (/home/runner/work/hammertime-auto-playwright-tests/hammertime-auto-playwright-tests/Playwright-Automation/node_modules/playwright/lib/program.js:167:24)
-    at async t.<anonymous> (/home/runner/work/hammertime-auto-playwright-tests/hammertime-auto-playwright-tests/Playwright-Automation/node_modules/playwright/lib/program.js:55:7) {
-  code: 'MODULE_NOT_FOUND',
-  requireStack: [
-    '/home/runner/work/hammertime-auto-playwright-tests/hammertime-auto-playwright-tests/Playwright-Automation/node_modules/playwright/lib/program.js',
-    '/home/runner/work/hammertime-auto-playwright-tests/hammertime-auto-playwright-tests/Playwright-Automation/node_modules/@playwright/test/cli.js'
-  ]
-}
-Test exit code: 1
-grep: ./test-results/report.json: No such file or directory
-Error: Process completed with exit code 1.
+        echo "Test exit code: $EXIT_CODE"
+        echo "exit-code=$EXIT_CODE" >> $GITHUB_OUTPUT
+
+        # Flaky test detection
+        if [ -f ./test-results/report.json ]; then
+          if grep -q '"status": "flaky"' ./test-results/report.json; then
+            echo "Flaky tests detected in ${{ matrix.group.file }}."
+            exit 1
+          fi
+        else
+          echo "Warning: report.json not found for flaky test detection."
+        fi
+
+        exit $EXIT_CODE
+      working-directory: ./Playwright-Automation
+      continue-on-error: true
