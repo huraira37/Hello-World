@@ -1,12 +1,49 @@
+import { merge } from 'monocart-reporter';
+import { globSync } from 'glob';
+import fs from 'fs';
+import path from 'path';
+
+const run = async () => {
+    const files = globSync('../raw-collection/**/report.json');
+    console.log(`Found ${files.length} raw JSON files to merge`);
+    files.forEach(f => console.log(' → ' + f));
+
+    if (!files.length) {
+        console.error('❌ No JSON files found to merge!');
+        process.exit(1);
+    }
+
+    const outputDir = './Playwright-Automation/merged-report';
+
+    // Create output directory if it doesn't exist
+    if (!fs.existsSync(outputDir)) {
+        fs.mkdirSync(outputDir, { recursive: true });
+    }
+
+    try {
+        await merge({
+            files,
+            output: path.join(outputDir, 'index.html')
+        });
+
+        console.log(`✅ Merged report written to ${outputDir}`);
+    } catch (err) {
+        console.error('❌ Merge failed:', err);
+        process.exit(1);
+    }
+};
+
+run();
+
+
 - name: Upload merged report
   uses: actions/upload-artifact@v4
   with:
     name: merged-report
-    path: ./Playwright-Automation/merged-report
+    path: Playwright-Automation/merged-report
 
 
-- name: 'Debug: Show merged report files'
-  working-directory: ./Playwright-Automation
+- name: Debug: Show merged report files
   run: |
-    echo "Files in merged-report folder:"
-    find merged-report
+    echo "📁 Files in merged-report folder:"
+    find Playwright-Automation/merged-report
