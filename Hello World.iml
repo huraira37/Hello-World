@@ -1,1 +1,293 @@
-set -o pipefail && EXIT_CODE=0 && DISPLAY=:99 npx playwright test ${{ matrix.group.file }} --project="Google Chrome" --workers=1 --headed --reporter=list,json=./test-results/report.json 2>&1 | tee test_output.txt || EXIT_CODE=$? && echo "Test exit code: $EXIT_CODE" && echo "exit-code=$EXIT_CODE" >> $GITHUB_OUTPUT && exit $EXIT_CODE
+getting error: still I'm straggling with this issue:
+
+* Merge Monocart reports using monocart-reporter
+Automation/merge-monocart.mjs:1
+import { merge, generate } from 'monocart-reporter';
+                ^^^^^^^^
+SyntaxError: The requested module 'monocart-reporter' does not provide an export named 'generate'
+    at ModuleJob._instantiate (node:internal/modules/esm/module_job:123:21)
+    at async ModuleJob.run (node:internal/modules/esm/module_job:191:5)
+    at async ModuleLoader.import (node:internal/modules/esm/loader:337:24)
+    at async loadESM (node:internal/process/esm_loader:34:7)
+    at async handleMainPromise (node:internal/modules/run_main:106:12)
+
+Node.js v18.20.7
+Error: Process completed with exit code 1.
+0s
+
+I'm sharing my entire yaml file:
+
+name: Multiple Jobs Test
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+  schedule:
+    - cron: '30 13 * * 5'  
+
+permissions:
+      contents: read
+      id-token: write
+      pull-requests: write
+      issues: write    
+jobs:
+  test:
+    timeout-minutes: 100
+    runs-on: ubuntu-latest-4-core-internal
+    strategy:
+      matrix:
+        group: [
+          # { file: 'Playwright-Automation/tests/cf_AutoTest/bscdownpayment/01_BSC-Silver-Lockdown-SC-NB.spec.ts', name: 'BSC Silver New Business Group 1' },
+          # { file: 'Playwright-Automation/tests/cf_AutoTest/bscdownpayment/02_BSC-Bronze-Lockdown-SC-NB.spec.ts', name: 'BSC Bronze New Business Group 2' },
+          # { file: 'Playwright-Automation/tests/cf_AutoTest/bscdownpayment/03_BSC-Gold-Lockdown-SC-NB.spec.ts', name: 'BSC Gold New Business Group 3' },
+          # { file: 'Playwright-Automation/tests/cf_AutoTest/foreignDriversLicense/CFA_Auto_FDL-CF1-NB.spec.ts', name: 'FDL CF1 New Business Group 4' },
+          # { file: 'Playwright-Automation/tests/cf_AutoTest/foreignDriversLicense/CFA_Auto_FDL-CF2-NB.spec.ts', name: 'FDL CF2 New Business Group 5' },
+          # { file: 'Playwright-Automation/tests/cf_AutoTest/restrictedOperator/01_Restrict-Operator-AL-New-Business.spec.ts', name: 'Restrict Operator AL New Business Group 6' },
+          { file: 'Playwright-Automation/tests/cf_AutoTest/restrictedOperator/02_Restrict-Operator-CO-Transfer.spec.ts', name: 'Restrict Operator CO Transfer Group 7' },
+          # { file: 'Playwright-Automation/tests/cf_AutoTest/restrictedOperator/03_Restrict-Operator-MT-Rewrite.spec.ts', name: 'Restrict Operator MT Rewrite Group 8' },
+          # { file: 'Playwright-Automation/tests/cf_AutoTest/restrictedOperator/04_Restrict-Operator-CA-New-Business.spec.ts', name: 'Restrict Operator CA New Business Group 9' },
+          # { file: 'Playwright-Automation/tests/cf_AutoTest/restrictedOperator/05_Restrict-Operator-KY-Transfer.spec.ts', name: 'Restrict Operator KY Transfer Group 10' },
+          # { file: 'Playwright-Automation/tests/cf_AutoTest/restrictedOperator/06_Restrict-Operator-PA-New-Business.spec.ts', name: 'Restrict Operator PA New Business Group 11' },
+          # { file: 'Playwright-Automation/tests/cf_AutoTest/restrictedOperator/07_Restrict-Operator-OR-New-Business.spec.ts', name: 'Restrict Operator OR New Business Group 12' },
+          # { file: 'Playwright-Automation/tests/cf_AutoTest/restrictedOperator/08_Restrict-Operator-WA-New-Business.spec.ts', name: 'Restrict Operator WA New Business Group 13' },
+          # { file: 'Playwright-Automation/tests/cf_AutoTest/restrictedOperator/09_Restrict-Operator-SC-Rewrite.spec.ts', name: 'Restrict Operator SC Rewrite Group 14' },
+          # { file: 'Playwright-Automation/tests/cf_AutoTest/restrictedOperator/10_Restrict-Operator-UT-Transfer.spec.ts', name: 'Restrict Operator UT Transfer Group 15' },
+          # { file: 'Playwright-Automation/tests/cf_AutoTest/restrictedOperator/11_Restrict-Operator-CA-Endorsement.spec.ts', name: 'Restrict Operator CA Endorsement Group 16' },
+          # { file: 'Playwright-Automation/tests/cf_AutoTest/restrictedOperator/12_Restrict-Operator-SC-Endorsement.spec.ts', name: 'Restrict Operator SC Endorsement Group 17' },
+          # { file: 'Playwright-Automation/tests/cf_AutoTest/tiktok_theft/CFA-Auto_TikTok-theft-New-Business-01.spec.ts', name: 'TikTok theft New Business-01 Group 18' },
+          # { file: 'Playwright-Automation/tests/cf_AutoTest/tiktok_theft/CFA-Auto_TikTok-theft-New-Business-02.spec.ts', name: 'TikTok theft New Business-02 Group 19' },
+          # { file: 'Playwright-Automation/tests/cf_AutoTest/tiktok_theft/CFA-Auto_TikTok-theft-Rewrite-03.spec.ts', name: 'TikTok theft Rewrite-03 Group 20' },
+          # { file: 'Playwright-Automation/tests/cf_AutoTest/tiktok_theft/CFA-Auto_TikTok-theft-Rewrite-04.spec.ts', name: 'TikTok theft Rewrite-04 Group 21' },
+          # { file: 'Playwright-Automation/tests/cf_AutoTest/tiktok_theft/CFA-Auto_TikTok-theft-Endorsement-05.spec.ts', name: 'TikTok theft Endorsement-05 Group 22' },
+          # { file: 'Playwright-Automation/tests/cf_AutoTest/tiktok_theft/CFA-Auto_TikTok-theft-Endorsement-06.spec.ts', name: 'TikTok theft Endorsement-06 Group 23' },
+          # { file: 'Playwright-Automation/tests/cf_AutoTest/tiktok_theft/CFA-Auto_TikTok-theft-Endorsement-07.spec.ts', name: 'TikTok theft Endorsement-07 Group 24' },
+          # { file: 'Playwright-Automation/tests/cf_AutoTest/tiktok_theft/CFA-Auto_TikTok-theft-Endorsement-08.spec.ts', name: 'TikTok theft Endorsement-08 Group 25' },
+          # { file: 'Playwright-Automation/tests/cf_AutoTest/tiktok_theft/CFA-Auto_TikTok-theft-Endorsement-09.spec.ts', name: 'TikTok theft Endorsement-09 Group 26' },
+          # { file: 'Playwright-Automation/tests/cf_AutoTest/tiktok_theft/CFA-Auto_TikTok-theft-Endorsement-10.spec.ts', name: 'TikTok theft Endorsement-10 Group 27' },
+          # { file: 'Playwright-Automation/tests/cf_AutoTest/unbindableVehicles/Cost_New_Unbind Vehs.spec.ts', name: 'Cost New Unbindable Vehicles Tests Group 28' },
+          # { file: 'Playwright-Automation/tests/cf_PropertyTest/Aerial Runway Pause/CFP_Property_Aerial_Runway_Pause.spec.ts', name: 'Aerial Runway Pause Tests Group 29' },
+          # { file: 'Playwright-Automation/tests/cf_PropertyTest/inspectionScoreCard/inspectionScoreCard.spec.ts', name: 'Inspection ScoreCard Tests Group 30' },
+          { file: 'Playwright-Automation/tests/cf_PropertyTest/NH_Pause/CFP Property_NH-Pause.ts', name: 'NH_PC9-PC10_Pause Tests Group 31' },
+          ]
+
+    name: ${{ matrix.group.name }}  # Custom job name
+    env:
+      CI: true
+    steps:
+    - uses: actions/checkout@v4
+    - uses: lmigtech/internal-actions/actions/setup-node@v0
+      with:
+          node-version: "20"
+          cache: "npm"
+          cache-dependency-path: "**/package-lock.json"
+          working-directory: ./Playwright-Automation
+
+    - name: Install Playwright Browsers
+      run: npx playwright install --with-deps
+      working-directory: ./Playwright-Automation
+
+    - name: Install Additional Dependencies(ffmpeg and xvfb)
+      run: |
+       sudo apt-get update
+       sudo apt-get install -y ffmpeg xvfb
+      shell: bash
+
+      #install ffmpeg for screen recording
+    - name: Install ffmpeg for screen recoding
+      run: sudo apt-get install ffmpeg -y
+
+      #start virtual display (xvfb) for headless browser
+    - name: Start Xvfb(Virtual Display)
+      run: |
+        Xvfb :99 -screen 0 1920x1080x24 -ac -nolisten tcp &
+        sleep 3 #Allow time for Xvfb to fully start
+      shell: bash
+
+      #Start recording the entire test execution
+    - name: Start screen recording with ffmpeg
+      run: |
+        ffmpeg -y -f x11grab -video_size 1920x1080 -i :99 -r 30 -c:v libx264 -preset ultrafast -pix_fmt yuv420p test_execution.mp4 &
+        sleep 2
+      shell: bash
+
+       #run playwright tests
+    - name: Run Playwright Tests
+      id: run_tests
+      run: |
+        # Ensure pipefail is set so the exit status of the first command in a pipeline is used.
+        set -o pipefail
+        EXIT_CODE=0
+        # Run the tests. If npx playwright test exist nonzero, capture its exit code.
+        DISPLAY=:99 npx playwright test ${{ matrix.group.file }} --project="Google Chrome" --workers=1 --headed 2>&1 | tee test_output.txt || EXIT_CODE=$?
+        echo "Test exit code: $EXIT_CODE"
+        # Set the exit code as a workflow output
+        echo "exit-code=$EXIT_CODE" >> $GITHUB_OUTPUT
+        # Exit with the captured code (this step is marked continue-on-error so subsequent steps run)
+        exit $EXIT_CODE
+        # Check for flaky tests in the report
+           if grep -q '"status": "flaky"' report.json; then
+             echo "Flaky tests detected in ${{ matrix.group.file }}."
+             exit 1
+           fi
+           # Exit with the original exit code if no flaky tests were found
+           exit $exit_code
+      working-directory: ./Playwright-Automation
+      continue-on-error: true
+ 
+
+      #stop screen recording after tests complete
+    - name: Stop screen recording
+      if: always()
+      run: |
+       if pgrep ffmpeg; then
+        echo "Stop screen recording..."
+        pkill ffmpeg
+        sleep 3 # Allow ffmpeg to finalize the file
+       else
+        echo "WARNING: ffmpeg was not running!"
+        cat ffmpeg_log.txt
+       fi
+      shell: bash
+
+      #Ensure video file was created
+    - name: Ensure Video Exists
+      if: always()
+      run: |
+       if [ ! -f test_execution.mp4 ]; then
+        echo "ERROR: test_execution.mp4 was not created!"
+        exit 1
+       fi
+      shell: bash
+
+      #Upload individual test videos (Deletes after 1 days)
+    - name: Upload individual test execution video
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: Test-Videos-${{ matrix.group.name }} 
+        path: ./Playwright-Automation/test-results/**/*.webm
+        retention-days: 1 
+      
+      #Upload the full test execution screen recording (deletes after 1 days) 
+    - name: Upload full test execution video
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: Full-Video-${{ matrix.group.name }} 
+        path: test_execution.mp4
+        retention-days: 1 
+
+      #Optionally, upload screenshots if any tests failed
+    - name: Upload Screenshots
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: Screenshots-${{ matrix.group.name }}  
+        path: ./Playwright-Automation/test-results/**/*.png
+        retention-days: 1
+
+      #upload Monocart report (keeps for 15 days)
+    - name: Upload Monocart report
+      if: always() # changed from if: ${{ !cancelled() }}
+      uses: actions/upload-artifact@v4
+      with:
+        name: Monocart-${{ matrix.group.name }}  
+        path: ./Playwright-Automation/monocart-report
+        retention-days: 1
+
+      
+      # Final check: fail the job if any tests failed
+    - name: "Final Check: Fail Job if Tests Failed"
+      if: always()
+      run: |
+        echo "Captured exit code: ${{ steps.run_tests.outputs.exit-code }}"
+        if [ "${{ steps.run_tests.outputs.exit-code }}" -ne 0 ]; then
+          echo "Some tests failed. Failing job."
+          exit 1
+        else
+         echo "All tests passed."
+        fi
+      shell: bash
+
+      # Upload Playwright JSON result
+    - name: Upload raw test result JSON
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+       name: Raw-Results-${{ matrix.group.name }}
+       path: ./Playwright-Automation/test-results/report.json
+       retention-days: 1
+
+      # added: aggregate job
+  aggregate:
+    
+    name: Aggregate All Artifacts
+    runs-on: ubuntu-latest-4-core-internal
+    needs: test
+    if: always()
+    steps:
+    - name: Download all artifacts
+      uses: actions/download-artifact@v4
+      with:
+        path: ./all-artifacts  
+
+    - name: List all downloaded files
+      run: |
+          echo "Downloaded files:"
+          find ./all-artifacts   
+    - name: Zip all results
+      run: |
+        zip -r Final-Report.zip ./all-artifacts 
+    
+    - name: Upload Final Report
+      uses: actions/upload-artifact@v4
+      with:
+        name: Final-Combined-Report
+        path: Final-Report.zip
+        retention-days: 1  
+    
+
+
+  merge-reports: 
+    needs: test 
+    runs-on: ubuntu-latest-4-core-internal
+    steps: 
+      - name: Checkout repo
+        uses: actions/checkout@v4
+  
+      # Download all JSON result files
+      - name: Download all raw result artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: raw-collection
+  
+      # List downloaded files
+      - name: 'Debug: List raw JSON files'
+        run: |
+          echo "Verifying downloaded report.json files:"
+          find raw-collection -name report.json
+  
+      - name: Set npm registry to Cloudflare mirror (avoid E503)
+        run: npm config set registry https://registry.npmmirror.com/
+  
+      - name: Install dependencies
+        run: npm ci
+        working-directory: ./Playwright-Automation
+  
+      # Merge Monocart JSON reports using monocart-reporter API
+      - name: Merge Monocart reports using monocart-reporter
+        run: node merge-monocart.mjs
+        working-directory: ./Playwright-Automation
+  
+      - name: 'Debug: List merged report directory'
+        run: |
+          echo "Checking contents of merged-report:"
+          ls -R merged-report || echo "merged-report folder not found"
+  
+      - name: Upload merged report
+        uses: actions/upload-artifact@v4
+        with:
+          name: merged-report
+          path: merged-report
+Please solve this issue and highlight where you will update in yaml?
