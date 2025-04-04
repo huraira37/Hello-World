@@ -1,16 +1,32 @@
-again I'm facing old issue, basically you are doing round and round but not fixixng the problem. I'm facing this issue since last Friday.
+// merge-monocart.mjs
+import { merge } from 'monocart-reporter';
+import { globSync } from 'glob';
+import path from 'path';
 
-* Merge and generate final Monocart report
-Run node merge-monocart.mjs
-file:///home/runner/work/hammertime-auto-playwright-tests/hammertime-auto-playwright-tests/Playwright-Automation/merge-monocart.mjs:1
-import { generate } from 'monocart-reporter';
-         ^^^^^^^^
-SyntaxError: The requested module 'monocart-reporter' does not provide an export named 'generate'
-    at ModuleJob._instantiate (node:internal/modules/esm/module_job:123:21)
-    at async ModuleJob.run (node:internal/modules/esm/module_job:191:5)
-    at async ModuleLoader.import (node:internal/modules/esm/loader:337:24)
-    at async loadESM (node:internal/process/esm_loader:34:7)
-    at async handleMainPromise (node:internal/modules/run_main:106:12)
+const run = async () => {
+  const files = globSync('../raw-collection/**/report.json');
 
-Node.js v18.20.7
-Error: Process completed with exit code 1.
+  console.log(`Found ${files.length} raw JSON files to merge`);
+  files.forEach(f => console.log(' → ' + f));
+
+  if (!files.length) {
+    console.error('❌ No JSON files found to merge!');
+    process.exit(1);
+  }
+
+  const outputDir = path.resolve('../merged-report');
+
+  try {
+    await merge({
+      files,
+      output: outputDir
+    });
+    console.log(`✅ Merged report written to ${outputDir}`);
+  } catch (err) {
+    console.error('❌ Merge failed:', err);
+    process.exit(1);
+  }
+};
+
+run();
+
