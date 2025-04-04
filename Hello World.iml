@@ -1,29 +1,16 @@
-    - name: Run Playwright Tests
-      id: run_tests
-      run: |
-        set -o pipefail
-        EXIT_CODE=0
+again I'm facing old issue, basically you are doing round and round but not fixixng the problem. I'm facing this issue since last Friday.
 
-        # Only specify test file and other CLI options — reporter is handled in config
-        DISPLAY=:99 npx playwright test ${{ matrix.group.file }} \
-          --project="Google Chrome" \
-          --workers=1 \
-          --headed \
-          2>&1 | tee test_output.txt || EXIT_CODE=$?
+* Merge and generate final Monocart report
+Run node merge-monocart.mjs
+file:///home/runner/work/hammertime-auto-playwright-tests/hammertime-auto-playwright-tests/Playwright-Automation/merge-monocart.mjs:1
+import { generate } from 'monocart-reporter';
+         ^^^^^^^^
+SyntaxError: The requested module 'monocart-reporter' does not provide an export named 'generate'
+    at ModuleJob._instantiate (node:internal/modules/esm/module_job:123:21)
+    at async ModuleJob.run (node:internal/modules/esm/module_job:191:5)
+    at async ModuleLoader.import (node:internal/modules/esm/loader:337:24)
+    at async loadESM (node:internal/process/esm_loader:34:7)
+    at async handleMainPromise (node:internal/modules/run_main:106:12)
 
-        echo "Test exit code: $EXIT_CODE"
-        echo "exit-code=$EXIT_CODE" >> $GITHUB_OUTPUT
-
-        # Flaky test detection
-        if [ -f ./test-results/report.json ]; then
-          if grep -q '"status": "flaky"' ./test-results/report.json; then
-            echo "Flaky tests detected in ${{ matrix.group.file }}."
-            exit 1
-          fi
-        else
-          echo "Warning: report.json not found for flaky test detection."
-        fi
-
-        exit $EXIT_CODE
-      working-directory: ./Playwright-Automation
-      continue-on-error: true
+Node.js v18.20.7
+Error: Process completed with exit code 1.
