@@ -1,30 +1,29 @@
-*Getting smae old issue.
+--reporter=list,json=./test-results/report.json
 
 
-* Merge and generate final Monocart report
-Run node merge-monocart.mjs
-  node merge-monocart.mjs
-  shell: /usr/bin/bash -e {0}
-Found 2 raw JSON files to merge
- → ../raw-collection/Raw-Results-Restrict Operator CO Transfer Group 7/report.json
- → ../raw-collection/Raw-Results-NH_PC9-PC10_Pause Tests Group 31/report.json
-[MR] merging report data ...
-[MR] invalid report data list: [object Object]
-Merged report written to ../merged-report/index.html
+import { generate } from 'monocart-reporter';
+import { globSync } from 'glob';
 
+const run = async () => {
+  const files = globSync('../raw-collection/**/report.json');
 
-* 'Debug: List merged report directory'
-Run echo "Checking contents of merged-report:"
-  echo "Checking contents of merged-report:"
-  ls -R merged-report || echo "merged-report folder not found"
-  shell: /usr/bin/bash -e {0}
-Checking contents of merged-report:
-ls: cannot access 'merged-report': No such file or directory
-merged-report folder not found
+  console.log(`Found ${files.length} raw JSON files to merge`);
+  files.forEach(f => console.log(' → ' + f));
 
+  if (!files.length) {
+    console.error('No JSON files found to merge!');
+    process.exit(1);
+  }
 
-* Upload merged report
-Run actions/upload-artifact@v4
-Warning: No files were found with the provided path: Playwright-Automation/merged-report. No artifacts will be uploaded.
+  const output = '../merged-report';
 
-Please solve it, dont messup my existing jobs reports
+  await generate({
+    files,
+    output,
+    name: 'Final Combined Monocart Report'
+  });
+
+  console.log(`Merged report written to ${output}/index.html`);
+};
+
+run();
