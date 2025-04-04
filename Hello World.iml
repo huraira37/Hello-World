@@ -1,22 +1,22 @@
-- name: Merge and generate final Monocart report
-  run: node merge-monocart.mjs
-  working-directory: ./Playwright-Automation
+please deeply check my below issue and solve it
 
-# 🔍 NEW DEBUG STEP TO INSERT HERE
-- name: Debug: Show merged report files
-  run: |
-    echo "📝 Files in merged-report folder:"
-    find Playwright-Automation/merged-report
-
-- name: 'Debug: List merged report directory'
-  run: |
-    echo "Checking contents of Playwright-Automation/merged-report:"
-    ls -R Playwright-Automation/merged-report || echo "merged-report folder not found"
-
-- name: Upload merged report
-  uses: actions/upload-artifact@v4
-  with:
-    name: merged-report
-    path: Playwright-Automation/merged-report
+*Merge and generate final Monocart report
+Run node merge-monocart.mjs
+Found 2 raw JSON files to merge
+ → ../raw-collection/Raw-Results-Restrict Operator CO Transfer Group 7/report.json
+ → ../raw-collection/Raw-Results-NH_PC9-PC10_Pause Tests Group 31/report.json
+[MR] merging report data ...
+[MR] invalid report data list: [object Object]
+✅ Merged report written to ./merged-report
 
 
+
+
+* 'Debug: Show merged report files'
+Run echo "Files in merged-report folder:"
+  echo "Files in merged-report folder:"
+  find Playwright-Automation/merged-report
+  shell: /usr/bin/bash -e {0}
+Files in merged-report folder:
+find: ‘Playwright-Automation/merged-report’: No such file or directory
+Error: Process completed with exit code 1.
