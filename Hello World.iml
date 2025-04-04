@@ -1,29 +1,25 @@
---reporter=list,json=./test-results/report.json
+can you check my syntex is correct or not? if not please update it
 
-
-import { generate } from 'monocart-reporter';
-import { globSync } from 'glob';
-
-const run = async () => {
-  const files = globSync('../raw-collection/**/report.json');
-
-  console.log(`Found ${files.length} raw JSON files to merge`);
-  files.forEach(f => console.log(' → ' + f));
-
-  if (!files.length) {
-    console.error('No JSON files found to merge!');
-    process.exit(1);
-  }
-
-  const output = '../merged-report';
-
-  await generate({
-    files,
-    output,
-    name: 'Final Combined Monocart Report'
-  });
-
-  console.log(`Merged report written to ${output}/index.html`);
-};
-
-run();
+     #run playwright tests
+    - name: Run Playwright Tests
+      id: run_tests
+      run: |
+        # Ensure pipefail is set so the exit status of the first command in a pipeline is used.
+        set -o pipefail
+        EXIT_CODE=0
+        # Run the tests. If npx playwright test exist nonzero, capture its exit code.
+        DISPLAY=:99 npx playwright test ${{ matrix.group.file }} --project="Google Chrome" --workers=1 --headed --reporter=list,json=./test-results/report.json 2>&1 | tee test_output.txt || EXIT_CODE=$?
+        echo "Test exit code: $EXIT_CODE"
+        # Set the exit code as a workflow output
+        echo "exit-code=$EXIT_CODE" >> $GITHUB_OUTPUT
+        # Exit with the captured code (this step is marked continue-on-error so subsequent steps run)
+        exit $EXIT_CODE
+        # Check for flaky tests in the report
+           if grep -q '"status": "flaky"' report.json; then
+             echo "Flaky tests detected in ${{ matrix.group.file }}."
+             exit 1
+           fi
+           # Exit with the original exit code if no flaky tests were found
+           exit $exit_code
+      working-directory: ./Playwright-Automation
+      continue-on-error: true
